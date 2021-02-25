@@ -18,12 +18,38 @@ namespace Sudoku_Graphic
         public Form1()
         {
             InitializeComponent();
+            this.AutoSize = true;
+            createCells();
+            Sudoku.AutoSize = true;
         }
 
-
-        private void button1_Click(object sender, EventArgs e)
+        Label[,] cells = new Label[9, 9];
+        
+        private void createCells()
         {
-            //code found at https://docs.microsoft.com/en-us/dotnet/api/system.windows.forms.openfiledialog?view=net-5.0
+            // design inspired by code found at https://playwithcsharpdotnet.blogspot.com/
+            for (int i = 0; i < 9; i++)
+            {
+                for (int j = 0; j < 9; j++)
+                {
+                    cells[i, j] = new Label();
+                    cells[i, j].Font = new Font(SystemFonts.DefaultFont.FontFamily, 20);
+                    cells[i, j].Font = new Font(SystemFonts.DefaultFont.FontFamily, 20);
+                    cells[i, j].Size = new Size(40, 40);
+                    cells[i, j].BorderStyle = BorderStyle.Fixed3D;
+                    cells[i, j].TextAlign = ContentAlignment.MiddleCenter;
+                    cells[i, j].ForeColor = SystemColors.ControlDarkDark;
+                    cells[i, j].Location = new Point(i * 40, j * 40);
+                    cells[i, j].BackColor = ((i / 3) + (j / 3)) % 2 == 0 ? SystemColors.Control : Color.LightGray;
+                    
+                    Sudoku.Controls.Add(cells[i, j]);
+                }
+            }
+        }
+
+        private void BtnImport_Click(object sender, EventArgs e)
+        {
+            // code found at https://docs.microsoft.com/en-us/dotnet/api/system.windows.forms.openfiledialog
             var fileContent = string.Empty;
             var filePath = string.Empty;
 
@@ -46,22 +72,15 @@ namespace Sudoku_Graphic
                     {
                         fileContent = reader.ReadToEnd();
                     }
+                    
+                    DecodeGrid(fileContent);
+
+                    UpdateGridDisplay();
                 }
             }
-            decodeGrid(fileContent);
-
-            for (int row = 0; row < 9; row++)
-            {
-                for (int column = 0; column < 9; column++)
-                {
-                    textBox1.Text += grid.SudokuGrid[column, row];
-                }
-                textBox1.Text += (char)8;
-            }
-
         }
 
-        private void decodeGrid(string gridContent)
+        private void DecodeGrid(string gridContent)
         {
             int actualIndex = 0;
             for (int i = 0; i < 11; i++)
@@ -78,6 +97,25 @@ namespace Sudoku_Graphic
                     }
                     actualIndex++;
                 }
+            }
+        }
+
+        private void UpdateGridDisplay()
+        {
+            for (int row = 0; row < 9; row++)
+            {
+                for (int column = 0; column < 9; column++)
+                {
+                    cells[row, column].Text = grid.SudokuGrid[column, row].ToString();
+                }
+            }
+        }
+
+        private void BtnResolve_Click(object sender, EventArgs e)
+        {
+            if(cells[0, 0].Text != String.Empty)
+            {
+
             }
         }
     }

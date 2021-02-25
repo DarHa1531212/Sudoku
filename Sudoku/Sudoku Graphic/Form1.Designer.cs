@@ -28,52 +28,65 @@
         /// </summary>
         private void InitializeComponent()
         {
-            this.textBox1 = new System.Windows.Forms.TextBox();
-            this.button1 = new System.Windows.Forms.Button();
+            this.BtnImport = new System.Windows.Forms.Button();
             this.openFileDialog1 = new System.Windows.Forms.OpenFileDialog();
+            this.Sudoku = new System.Windows.Forms.Panel();
+            this.BtnResolve = new System.Windows.Forms.Button();
             this.SuspendLayout();
             // 
-            // textBox1
+            // BtnImport
             // 
-            this.textBox1.Location = new System.Drawing.Point(12, 12);
-            this.textBox1.Multiline = true;
-            this.textBox1.Name = "textBox1";
-            this.textBox1.Size = new System.Drawing.Size(317, 204);
-            this.textBox1.TabIndex = 0;
-            // 
-            // button1
-            // 
-            this.button1.Location = new System.Drawing.Point(13, 223);
-            this.button1.Name = "button1";
-            this.button1.Size = new System.Drawing.Size(75, 23);
-            this.button1.TabIndex = 1;
-            this.button1.Text = "button1";
-            this.button1.UseVisualStyleBackColor = true;
-            this.button1.Click += new System.EventHandler(this.button1_Click);
+            this.BtnImport.Location = new System.Drawing.Point(11, 12);
+            this.BtnImport.Margin = new System.Windows.Forms.Padding(2);
+            this.BtnImport.Name = "BtnImport";
+            this.BtnImport.Size = new System.Drawing.Size(99, 39);
+            this.BtnImport.TabIndex = 1;
+            this.BtnImport.Text = "Importer un plateau (.ss)";
+            this.BtnImport.UseVisualStyleBackColor = true;
+            this.BtnImport.Click += new System.EventHandler(this.BtnImport_Click);
             // 
             // openFileDialog1
             // 
             this.openFileDialog1.FileName = "openFileDialog1";
             // 
+            // Sudoku
+            // 
+            this.Sudoku.Location = new System.Drawing.Point(115, 12);
+            this.Sudoku.Name = "Sudoku";
+            this.Sudoku.Size = new System.Drawing.Size(362, 332);
+            this.Sudoku.TabIndex = 2;
+            // 
+            // BtnResolve
+            // 
+            this.BtnResolve.Location = new System.Drawing.Point(11, 55);
+            this.BtnResolve.Margin = new System.Windows.Forms.Padding(2);
+            this.BtnResolve.Name = "BtnResolve";
+            this.BtnResolve.Size = new System.Drawing.Size(99, 39);
+            this.BtnResolve.TabIndex = 3;
+            this.BtnResolve.Text = "Résoudre le sudoku";
+            this.BtnResolve.UseVisualStyleBackColor = true;
+            this.BtnResolve.Click += new System.EventHandler(this.BtnResolve_Click);
+            // 
             // Form1
             // 
-            this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
+            this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(1284, 621);
-            this.Controls.Add(this.button1);
-            this.Controls.Add(this.textBox1);
+            this.ClientSize = new System.Drawing.Size(960, 549);
+            this.Controls.Add(this.BtnResolve);
+            this.Controls.Add(this.Sudoku);
+            this.Controls.Add(this.BtnImport);
+            this.Margin = new System.Windows.Forms.Padding(2);
             this.Name = "Form1";
             this.Text = "Form1";
             this.ResumeLayout(false);
-            this.PerformLayout();
 
         }
 
         #endregion
-
-        private System.Windows.Forms.TextBox textBox1;
-        private System.Windows.Forms.Button button1;
+        private System.Windows.Forms.Button BtnImport;
         private System.Windows.Forms.OpenFileDialog openFileDialog1;
+        private System.Windows.Forms.Panel Sudoku;
+        private System.Windows.Forms.Button BtnResolve;
     }
 }
 
