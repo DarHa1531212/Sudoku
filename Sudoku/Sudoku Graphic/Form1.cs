@@ -118,5 +118,10 @@ namespace Sudoku_Graphic
 
             }
         }
+
+        private void BtnGenerate_Click(object sender, EventArgs e)
+        {
+
+        }
     }
 }

@@ -32,6 +32,7 @@
             this.openFileDialog1 = new System.Windows.Forms.OpenFileDialog();
             this.Sudoku = new System.Windows.Forms.Panel();
             this.BtnResolve = new System.Windows.Forms.Button();
+            this.BtnGenerate = new System.Windows.Forms.Button();
             this.SuspendLayout();
             // 
             // BtnImport
@@ -67,11 +68,23 @@
             this.BtnResolve.UseVisualStyleBackColor = true;
             this.BtnResolve.Click += new System.EventHandler(this.BtnResolve_Click);
             // 
+            // BtnGenerate
+            // 
+            this.BtnGenerate.Location = new System.Drawing.Point(11, 98);
+            this.BtnGenerate.Margin = new System.Windows.Forms.Padding(2);
+            this.BtnGenerate.Name = "BtnGenerate";
+            this.BtnGenerate.Size = new System.Drawing.Size(99, 39);
+            this.BtnGenerate.TabIndex = 4;
+            this.BtnGenerate.Text = "Générer un plateau";
+            this.BtnGenerate.UseVisualStyleBackColor = true;
+            this.BtnGenerate.Click += new System.EventHandler(this.BtnGenerate_Click);
+            // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(960, 549);
+            this.Controls.Add(this.BtnGenerate);
             this.Controls.Add(this.BtnResolve);
             this.Controls.Add(this.Sudoku);
             this.Controls.Add(this.BtnImport);
@@ -87,6 +100,7 @@
         private System.Windows.Forms.OpenFileDialog openFileDialog1;
         private System.Windows.Forms.Panel Sudoku;
         private System.Windows.Forms.Button BtnResolve;
+        private System.Windows.Forms.Button BtnGenerate;
     }
 }
 
