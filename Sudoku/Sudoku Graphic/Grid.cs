@@ -11,6 +11,7 @@ namespace Sudoku_Graphic
         #region Constants
 
         const int gridSize = 9;
+        const int squareSize = 3;
 
         #endregion
 
@@ -23,7 +24,7 @@ namespace Sudoku_Graphic
 
         #region Ctor
 
-        public Grid ()
+        public Grid()
         {
 
         }
@@ -94,15 +95,176 @@ namespace Sudoku_Graphic
             return null;
         }
 
+        private Tuple<int, int> MRV(char[,] grid)
+        {
+            int minRemainingValues = int.MaxValue;
+            Tuple<int, int> chosenVar = new Tuple<int, int>(-1, -1);
+            for (int i = 0; i < gridSize; i++)
+            {
+                for (int j = 0; j < gridSize; j++)
+                {
+                    if (grid[j, i] == '.')
+                    {
+                        Tuple<int, int> testedVar = new Tuple<int, int>(j, i);
+                        int remainingValuesCount = getRemainingPossibleValues(testedVar, grid).Count;
+                        if (remainingValuesCount < minRemainingValues)
+                        {
+                            minRemainingValues = remainingValuesCount;
+                            chosenVar = testedVar;
+                        }
+                    }
+                }
+            }
+            return chosenVar;
+        }
+
+        private Tuple<int, int> DegreeHeuristic(char[,] grid)
+        {
+            int maxRemainingConstraints = int.MinValue;
+            Tuple<int, int> chosenVar = new Tuple<int, int>(-1, -1);
+            for (int i = 0; i < gridSize; i++)
+            {
+                for (int j = 0; j < gridSize; j++)
+                {
+                    if (grid[j, i] == '.')
+                    {
+                        Tuple<int, int> testedVar = new Tuple<int, int>(j, i);
+                        int constraintsOfVar = getRemainingNumberOfConstraints(testedVar, grid);
+                        if (constraintsOfVar > maxRemainingConstraints)
+                        {
+                            maxRemainingConstraints = constraintsOfVar;
+                            chosenVar = testedVar;
+                        }
+
+                    }
+                }
+            }
+            return chosenVar;
+        }
+
+        // Attention, bien donner le tuple sous format (x,y) / (j,i)
+        private List<char> getRemainingPossibleValues(Tuple<int, int> gridLocation, char[,] grid)
+        {
+            List<char> remainingValues = new List<char>(
+                new char[] { '1', '2', '3', '4', '5', '6', '7', '8', '9' });
+            // First, remove all values on the same line and colum
+            for (int index = 0; index < gridSize; ++index)
+            {
+                remainingValues.Remove(grid[gridLocation.Item1, index]);
+                remainingValues.Remove(grid[index, gridLocation.Item2]);
+            }
+
+            int squareNumberX = gridLocation.Item2 / squareSize;
+            int squareNumberY = gridLocation.Item1 / squareSize;
+
+            for (int i = 0 + squareNumberX * squareSize; i < 0 + squareNumberX * squareSize + 3; ++i)
+            {
+                for (int j = 0 + squareNumberY * squareSize; i < 0 + squareNumberY * squareSize + 3; ++j)
+                {
+                    remainingValues.Remove(grid[j, i]);
+                }
+            }
+            return remainingValues;
+        }
+
+        // Attention, bien donner le tuple sous format (x,y) / (j,i)
+        private int getRemainingNumberOfConstraints(Tuple<int, int> gridLocation, char[,] grid)
+        {
+            int constraintsRemaining = 0;
+            // First, remove all values on the same line and colum
+            for (int index = 0; index < gridSize; ++index)
+            {
+                if (index != gridLocation.Item1)
+                {
+                    if (grid[index, gridLocation.Item2] == '.')
+                    {
+                        constraintsRemaining++;
+                    }
+                }
+                if (index != gridLocation.Item2)
+                {
+                    if (grid[gridLocation.Item1, index] == '.')
+                    {
+                        constraintsRemaining++;
+                    }
+                }
+            }
+
+            int squareNumberX = gridLocation.Item2 / squareSize;
+            int squareNumberY = gridLocation.Item1 / squareSize;
+
+            // Attention à ne pas ajouter 1 pour les contraintes déjà trouvées avec les lignes/colonnes
+            for (int i = 0 + squareNumberX * squareSize; i < 0 + squareNumberX * squareSize + 3; ++i)
+            {
+                for (int j = 0 + squareNumberY * squareSize; i < 0 + squareNumberY * squareSize + 3; ++j)
+                {
+                    if (i != gridLocation.Item2 && j != gridLocation.Item1)
+                    {
+                        if (grid[j, i] == '.')
+                        {
+                            constraintsRemaining++;
+                        }
+                    }
+                }
+            }
+            return constraintsRemaining;
+        }
+
         private List<char> OrderDomainValues(Tuple<int, int> position, char[,] grid)
         {
             // TODO: modifier pour les ordonner
             List<char> values = new List<char>();
-            for(char v = '1'; v == '9'; v++)
+            for (char v = '1'; v == '9'; v++)
             {
                 values.Add(v);
             }
             return values;
+        }
+
+        private List<char> LeastConstraingValue(Tuple<int, int> position, char[,] grid)
+        {
+            // Question : est-ce qu'il faut prendre le minimum des valeurs possibles restantes ou bien les sommer ?
+            // Dans le doute je prends le minimum
+            Dictionary<char, int> remainingMinimalValues = new Dictionary<char, int>();
+
+            for (char v = '1'; v <= '9'; ++v)
+            {
+                // Etape 1 : Créer la nouvelle grille
+                char[,] testGrid = new char[gridSize, gridSize];
+                Array.Copy(grid, 0, testGrid, gridSize * gridSize - 1, gridSize * gridSize);
+
+                testGrid[position.Item2, position.Item1] = v;
+                // Etape 2 : Itérer sur les éléments non remplis pour trouver le minimum de valeurs possibles
+                int minRemainingValues = int.MaxValue;
+                for (int i = 0; i < gridSize; ++i)
+                {
+                    for (int j = 0; j < gridSize; ++j)
+                    {
+                        if(grid[j,i] == '.')
+                        {
+                            Tuple<int, int> testedPosition = new Tuple<int, int>(j, i);
+                            int remainingValues = getRemainingPossibleValues(testedPosition, testGrid).Count;
+                            if(remainingValues < minRemainingValues)
+                            {
+                                minRemainingValues = remainingValues;
+                            }
+                        }
+                    }
+                }
+
+                // Etape 3 : Insérer dans le dictionnaire
+                remainingMinimalValues.Add(v, minRemainingValues);
+            }
+
+            List<char> orderedValues = new List<char>();
+            // Trier le dictionnaire selon la valeur décroissante
+            foreach (KeyValuePair<char, int> item in remainingMinimalValues.OrderByDescending(key => key.Value))
+            {
+                orderedValues.Add(item.Key);
+            }
+
+            return orderedValues;
+
         }
 
         private bool IsConsistent(char value, char[,] grid)
