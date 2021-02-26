@@ -85,15 +85,15 @@ namespace Sudoku_Graphic
             int actualIndex = 0;
             for (int i = 0; i < 11; i++)
             {
-                string columnSubstring = gridContent.Substring(13 * i, 11)
-                    .Replace("|", "")
+                string columnSubstring = gridContent.Substring(12 * i, 11)
+                    .Replace("!", "")
                     .Replace("-", "");
 
                 if (columnSubstring != String.Empty)
                 {
                     for (int j = 0; j < 9; j++)
                     {
-                        grid.SudokuGrid[j, actualIndex] = Convert.ToChar(columnSubstring.Substring(j, 1));
+                        grid.SudokuGrid[actualIndex, j] = Convert.ToChar(columnSubstring.Substring(j, 1));
                     }
                     actualIndex++;
                 }
