@@ -93,7 +93,8 @@ namespace Sudoku_Graphic
                 {
                     for (int j = 0; j < 9; j++)
                     {
-                        grid.SudokuGrid[j, actualIndex] = Convert.ToChar(columnSubstring.Substring(j, 1));
+                        grid.SudokuGrid[j, actualIndex] = new Cell(j, actualIndex);
+                        grid.SudokuGrid[j, actualIndex].Value = Convert.ToChar(columnSubstring.Substring(j, 1));
                     }
                     actualIndex++;
                 }
@@ -106,7 +107,7 @@ namespace Sudoku_Graphic
             {
                 for (int column = 0; column < 9; column++)
                 {
-                    cells[row, column].Text = grid.SudokuGrid[column, row].ToString();
+                    cells[row, column].Text = grid.SudokuGrid[column, row].Value.ToString();
                 }
             }
         }

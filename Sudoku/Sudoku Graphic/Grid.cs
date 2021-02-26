@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace Sudoku_Graphic
 {
-    class Grid
+    public class Grid
     {
         #region Constants
 
@@ -17,8 +17,8 @@ namespace Sudoku_Graphic
 
         #region Attributs
 
-        private char[,] sudokuGrid = new char[gridSize, gridSize];
-        public char[,] SudokuGrid { get => sudokuGrid; set => sudokuGrid = value; }
+        private Cell[,] sudokuGrid = new Cell[gridSize, gridSize];
+        public Cell[,] SudokuGrid { get => sudokuGrid; set => sudokuGrid = value; }
 
         #endregion
 
@@ -26,7 +26,15 @@ namespace Sudoku_Graphic
 
         public Grid()
         {
+            for(int i = 0; i < gridSize; ++i)
+            {
+                for (int j = 0; j < gridSize; ++j)
+                {
+                    sudokuGrid[j, i] = new Cell(j, i);
+                    sudokuGrid[j, i].Value = '.';
+                }
 
+            }
         }
 
         #endregion
@@ -35,7 +43,8 @@ namespace Sudoku_Graphic
 
         public char[,] BacktrackingSearch()
         {
-            return RecursiveBacktracking(SudokuGrid);
+            char[,] cellsAsChar = CellsAsChar();
+            return RecursiveBacktracking(cellsAsChar);
         }
 
         public char[,] RecursiveBacktracking(char[,] grid)
@@ -66,6 +75,20 @@ namespace Sudoku_Graphic
         #endregion
 
         #region Private methods
+
+        private char[,] CellsAsChar()
+        {
+
+            char[,] cellsAsValue = new char[gridSize, gridSize];
+            for (int i = 0; i < gridSize; ++i)
+            {
+                for (int j = 0; j < gridSize; ++j)
+                {
+                    cellsAsValue[i, j] = sudokuGrid[i, j].Value;
+                }
+            }
+            return cellsAsValue;
+        }
 
         private bool IsComplete(char[,] grid)
         {
