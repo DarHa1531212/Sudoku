@@ -57,7 +57,7 @@ namespace Sudoku_Graphic
 
             foreach (var value in OrderDomainValues(selectedVariable, grid))
             {
-                if (IsConsistent(value, grid))
+                if (IsConsistent(selectedVariable, value, grid))
                 {
                     grid[selectedVariable.Item1, selectedVariable.Item2] = value;
                     char[,] result = RecursiveBacktracking(grid);
@@ -290,9 +290,44 @@ namespace Sudoku_Graphic
 
         }
 
-        private bool IsConsistent(char value, char[,] grid)
+        private bool IsConsistent(Tuple<int, int> position, char value, char[,] grid)
         {
             // TODO: ajouter la vérification des contraintes
+            for (int index = 0; index < gridSize; ++index)
+            {
+                if (index != position.Item1)
+                {
+                    if (grid[index, position.Item2] == value)
+                    {
+                        return false;
+                    }
+                }
+                if (index != position.Item2)
+                {
+                    if (grid[position.Item1, index] == value)
+                    {
+                        return false;
+                    }
+                }
+            }
+
+            int squareNumberX = position.Item2 / squareSize;
+            int squareNumberY = position.Item1 / squareSize;
+
+            // Attention à ne pas ajouter 1 pour les contraintes déjà trouvées avec les lignes/colonnes
+            for (int i = 0 + squareNumberX * squareSize; i < 0 + squareNumberX * squareSize + 3; ++i)
+            {
+                for (int j = 0 + squareNumberY * squareSize; i < 0 + squareNumberY * squareSize + 3; ++j)
+                {
+                    if (i != position.Item2 && j != position.Item1)
+                    {
+                        if (grid[j, i] == value)
+                        {
+                            return false;
+                        }
+                    }
+                }
+            }
             return true;
         }
 
