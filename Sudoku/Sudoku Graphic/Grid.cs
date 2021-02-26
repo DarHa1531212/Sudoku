@@ -41,13 +41,13 @@ namespace Sudoku_Graphic
 
         #region Public methods
 
-        public char[,] BacktrackingSearch()
+        public Cell[,] BacktrackingSearch()
         {
             char[,] cellsAsChar = CellsAsChar();
-            return RecursiveBacktracking(cellsAsChar);
+            return RecursiveBacktracking(sudokuGrid);
         }
 
-        public char[,] RecursiveBacktracking(char[,] grid)
+        public Cell[,] RecursiveBacktracking(Cell[,] grid)
         {
             if (IsComplete(grid))
             {
@@ -59,16 +59,15 @@ namespace Sudoku_Graphic
             {
                 if (IsConsistent(selectedVariable, value, grid))
                 {
-                    grid[selectedVariable.Item1, selectedVariable.Item2] = value;
-                    char[,] result = RecursiveBacktracking(grid);
+                    grid[selectedVariable.Item1, selectedVariable.Item2].Value = value;
+                    Cell[,] result = RecursiveBacktracking(grid);
                     if (result != null)
                     {
                         return result;
                     }
-                    grid[selectedVariable.Item1, selectedVariable.Item2] = '.';
+                    grid[selectedVariable.Item1, selectedVariable.Item2].Value = '.';
                 }
             }
-
             return null;
         }
 
@@ -90,11 +89,11 @@ namespace Sudoku_Graphic
             return cellsAsValue;
         }
 
-        private bool IsComplete(char[,] grid)
+        private bool IsComplete(Cell[,] grid)
         {
             foreach (var cell in grid)
             {
-                if (cell == '.')
+                if (cell.Value == '.')
                 {
                     return false;
                 }
@@ -102,14 +101,14 @@ namespace Sudoku_Graphic
             return true;
         }
 
-        private Tuple<int, int> SelectUnassignedVariable(char[,] grid)
+        private Tuple<int, int> SelectUnassignedVariable(Cell[,] grid)
         {
             // TODO: modifier la façon dont est selectionnée la case
             for (int i = 0; i < gridSize; i++)
             {
                 for (int j = 0; j < gridSize; j++)
                 {
-                    if (grid[j, i] == '.')
+                    if (grid[j, i].Value == '.')
                     {
                         return new Tuple<int, int>(j, i);
                     }
@@ -118,7 +117,7 @@ namespace Sudoku_Graphic
             return null;
         }
 
-        private Tuple<int, int> MRV(char[,] grid)
+        private Tuple<int, int> MRV(Cell[,] grid)
         {
             int minRemainingValues = int.MaxValue;
             Tuple<int, int> chosenVar = new Tuple<int, int>(-1, -1);
@@ -126,7 +125,7 @@ namespace Sudoku_Graphic
             {
                 for (int j = 0; j < gridSize; j++)
                 {
-                    if (grid[j, i] == '.')
+                    if (grid[j, i].Value == '.')
                     {
                         Tuple<int, int> testedVar = new Tuple<int, int>(j, i);
                         int remainingValuesCount = getRemainingPossibleValues(testedVar, grid).Count;
@@ -141,7 +140,7 @@ namespace Sudoku_Graphic
             return chosenVar;
         }
 
-        private Tuple<int, int> DegreeHeuristic(char[,] grid)
+        private Tuple<int, int> DegreeHeuristic(Cell[,] grid)
         {
             int maxRemainingConstraints = int.MinValue;
             Tuple<int, int> chosenVar = new Tuple<int, int>(-1, -1);
@@ -149,7 +148,7 @@ namespace Sudoku_Graphic
             {
                 for (int j = 0; j < gridSize; j++)
                 {
-                    if (grid[j, i] == '.')
+                    if (grid[j, i].Value == '.')
                     {
                         Tuple<int, int> testedVar = new Tuple<int, int>(j, i);
                         int constraintsOfVar = getRemainingNumberOfConstraints(testedVar, grid);
@@ -166,15 +165,15 @@ namespace Sudoku_Graphic
         }
 
         // Attention, bien donner le tuple sous format (x,y) / (j,i)
-        private List<char> getRemainingPossibleValues(Tuple<int, int> gridLocation, char[,] grid)
+        private List<char> getRemainingPossibleValues(Tuple<int, int> gridLocation, Cell[,] grid)
         {
             List<char> remainingValues = new List<char>(
                 new char[] { '1', '2', '3', '4', '5', '6', '7', '8', '9' });
             // First, remove all values on the same line and colum
             for (int index = 0; index < gridSize; ++index)
             {
-                remainingValues.Remove(grid[gridLocation.Item1, index]);
-                remainingValues.Remove(grid[index, gridLocation.Item2]);
+                remainingValues.Remove(grid[gridLocation.Item1, index].Value);
+                remainingValues.Remove(grid[index, gridLocation.Item2].Value);
             }
 
             int squareNumberX = gridLocation.Item2 / squareSize;
@@ -184,14 +183,14 @@ namespace Sudoku_Graphic
             {
                 for (int j = 0 + squareNumberY * squareSize; i < 0 + squareNumberY * squareSize + 3; ++j)
                 {
-                    remainingValues.Remove(grid[j, i]);
+                    remainingValues.Remove(grid[j, i].Value);
                 }
             }
             return remainingValues;
         }
 
         // Attention, bien donner le tuple sous format (x,y) / (j,i)
-        private int getRemainingNumberOfConstraints(Tuple<int, int> gridLocation, char[,] grid)
+        private int getRemainingNumberOfConstraints(Tuple<int, int> gridLocation, Cell[,] grid)
         {
             int constraintsRemaining = 0;
             // First, remove all values on the same line and colum
@@ -199,14 +198,14 @@ namespace Sudoku_Graphic
             {
                 if (index != gridLocation.Item1)
                 {
-                    if (grid[index, gridLocation.Item2] == '.')
+                    if (grid[index, gridLocation.Item2].Value == '.')
                     {
                         constraintsRemaining++;
                     }
                 }
                 if (index != gridLocation.Item2)
                 {
-                    if (grid[gridLocation.Item1, index] == '.')
+                    if (grid[gridLocation.Item1, index].Value == '.')
                     {
                         constraintsRemaining++;
                     }
@@ -223,7 +222,7 @@ namespace Sudoku_Graphic
                 {
                     if (i != gridLocation.Item2 && j != gridLocation.Item1)
                     {
-                        if (grid[j, i] == '.')
+                        if (grid[j, i].Value == '.')
                         {
                             constraintsRemaining++;
                         }
@@ -233,37 +232,40 @@ namespace Sudoku_Graphic
             return constraintsRemaining;
         }
 
-        private List<char> OrderDomainValues(Tuple<int, int> position, char[,] grid)
+        private List<char> OrderDomainValues(Tuple<int, int> position, Cell[,] grid)
         {
             // TODO: modifier pour les ordonner
+            /*
             List<char> values = new List<char>();
             for (char v = '1'; v == '9'; v++)
             {
                 values.Add(v);
             }
             return values;
+            */
+            return grid[position.Item1, position.Item2].Domain;
         }
 
-        private List<char> LeastConstraingValue(Tuple<int, int> position, char[,] grid)
+        private List<char> LeastConstraingValue(Tuple<int, int> position, Cell[,] grid)
         {
             // Question : est-ce qu'il faut prendre le minimum des valeurs possibles restantes ou bien les sommer ?
             // Dans le doute je prends le minimum
             Dictionary<char, int> remainingMinimalValues = new Dictionary<char, int>();
 
-            for (char v = '1'; v <= '9'; ++v)
+            foreach (char v in grid[position.Item2, position.Item1].Domain)
             {
                 // Etape 1 : Créer la nouvelle grille
-                char[,] testGrid = new char[gridSize, gridSize];
+                Cell[,] testGrid = new Cell[gridSize, gridSize];
                 Array.Copy(grid, 0, testGrid, gridSize * gridSize - 1, gridSize * gridSize);
 
-                testGrid[position.Item2, position.Item1] = v;
+                testGrid[position.Item2, position.Item1].Value = v;
                 // Etape 2 : Itérer sur les éléments non remplis pour trouver le minimum de valeurs possibles
                 int minRemainingValues = int.MaxValue;
                 for (int i = 0; i < gridSize; ++i)
                 {
                     for (int j = 0; j < gridSize; ++j)
                     {
-                        if(grid[j,i] == '.')
+                        if(grid[j,i].Value == '.')
                         {
                             Tuple<int, int> testedPosition = new Tuple<int, int>(j, i);
                             int remainingValues = getRemainingPossibleValues(testedPosition, testGrid).Count;
@@ -290,21 +292,21 @@ namespace Sudoku_Graphic
 
         }
 
-        private bool IsConsistent(Tuple<int, int> position, char value, char[,] grid)
+        private bool IsConsistent(Tuple<int, int> position, char value, Cell[,] grid)
         {
             // TODO: ajouter la vérification des contraintes
             for (int index = 0; index < gridSize; ++index)
             {
                 if (index != position.Item1)
                 {
-                    if (grid[index, position.Item2] == value)
+                    if (grid[index, position.Item2].Value == value)
                     {
                         return false;
                     }
                 }
                 if (index != position.Item2)
                 {
-                    if (grid[position.Item1, index] == value)
+                    if (grid[position.Item1, index].Value == value)
                     {
                         return false;
                     }
@@ -321,7 +323,7 @@ namespace Sudoku_Graphic
                 {
                     if (i != position.Item2 && j != position.Item1)
                     {
-                        if (grid[j, i] == value)
+                        if (grid[j, i].Value == value)
                         {
                             return false;
                         }
