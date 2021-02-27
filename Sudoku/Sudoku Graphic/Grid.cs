@@ -43,7 +43,7 @@ namespace Sudoku_Graphic
 
         public Cell[,] BacktrackingSearch()
         {
-            char[,] cellsAsChar = CellsAsChar();
+            //char[,] cellsAsChar = CellsAsChar();
             return RecursiveBacktracking(sudokuGrid);
         }
 
@@ -316,13 +316,18 @@ namespace Sudoku_Graphic
             int squareNumberX = position.Item2 / squareSize;
             int squareNumberY = position.Item1 / squareSize;
 
+            Console.WriteLine(squareNumberX);
+            Console.WriteLine(squareNumberY);
+
             // Attention à ne pas ajouter 1 pour les contraintes déjà trouvées avec les lignes/colonnes
             for (int i = 0 + squareNumberX * squareSize; i < 0 + squareNumberX * squareSize + 3; ++i)
             {
-                for (int j = 0 + squareNumberY * squareSize; i < 0 + squareNumberY * squareSize + 3; ++j)
+                for (int j = 0 + squareNumberY * squareSize; j < 0 + squareNumberY * squareSize + 3; ++j)
                 {
                     if (i != position.Item2 && j != position.Item1)
                     {
+                        Console.WriteLine(j);
+                        Console.WriteLine(i);
                         if (grid[j, i].Value == value)
                         {
                             return false;
