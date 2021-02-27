@@ -316,8 +316,6 @@ namespace Sudoku_Graphic
             int squareNumberX = position.Item2 / squareSize;
             int squareNumberY = position.Item1 / squareSize;
 
-            Console.WriteLine(squareNumberX);
-            Console.WriteLine(squareNumberY);
 
             // Attention à ne pas ajouter 1 pour les contraintes déjà trouvées avec les lignes/colonnes
             for (int i = 0 + squareNumberX * squareSize; i < 0 + squareNumberX * squareSize + 3; ++i)
@@ -326,8 +324,6 @@ namespace Sudoku_Graphic
                 {
                     if (i != position.Item2 && j != position.Item1)
                     {
-                        Console.WriteLine(j);
-                        Console.WriteLine(i);
                         if (grid[j, i].Value == value)
                         {
                             return false;
