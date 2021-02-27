@@ -115,7 +115,9 @@ namespace Sudoku_Graphic
         {
             if(cells[0, 0].Text != String.Empty)
             {
-
+                Cell[,] solvedSudoku = grid.BacktrackingSearch();
+                grid.SudokuGrid = solvedSudoku;
+                UpdateGridDisplay();
             }
         }
 
