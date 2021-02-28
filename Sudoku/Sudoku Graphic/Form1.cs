@@ -14,6 +14,9 @@ namespace Sudoku_Graphic
     public partial class Form1 : Form
     {
         Grid grid = new Grid();
+        CSP csp = new CSP();
+
+        bool asCSP = true;
 
         public Form1()
         {
@@ -24,7 +27,7 @@ namespace Sudoku_Graphic
         }
 
         Label[,] cells = new Label[9, 9];
-        
+
         private void createCells()
         {
             // design inspired by code found at https://playwithcsharpdotnet.blogspot.com/
@@ -41,7 +44,7 @@ namespace Sudoku_Graphic
                     cells[i, j].ForeColor = SystemColors.ControlDarkDark;
                     cells[i, j].Location = new Point(i * 40, j * 40);
                     cells[i, j].BackColor = ((i / 3) + (j / 3)) % 2 == 0 ? SystemColors.Control : Color.LightGray;
-                    
+
                     Sudoku.Controls.Add(cells[i, j]);
                 }
             }
@@ -72,7 +75,7 @@ namespace Sudoku_Graphic
                     {
                         fileContent = reader.ReadToEnd();
                     }
-                    
+
                     DecodeGrid(fileContent);
 
                     UpdateGridDisplay();
@@ -82,6 +85,7 @@ namespace Sudoku_Graphic
 
         private void DecodeGrid(string gridContent)
         {
+            csp.ClearLists();
             int actualIndex = 0;
             for (int i = 0; i < 11; i++)
             {
@@ -94,31 +98,69 @@ namespace Sudoku_Graphic
                     for (int j = 0; j < 9; j++)
                     {
                         grid.SudokuGrid[actualIndex, j].Value = Convert.ToChar(columnSubstring.Substring(j, 1));
+
+                        Cell cell = new Cell(actualIndex, j);
+                        cell.Value = Convert.ToChar(columnSubstring.Substring(j, 1));
+                        csp.Cells.Add(cell);
                     }
                     actualIndex++;
                 }
             }
+            csp.GenerateArcs();
         }
 
         private void UpdateGridDisplay()
         {
-            for (int row = 0; row < 9; row++)
+            if (!asCSP)
             {
-                for (int column = 0; column < 9; column++)
+                for (int row = 0; row < 9; row++)
                 {
-                    cells[row, column].Text = grid.SudokuGrid[column, row].Value.ToString();
+                    for (int column = 0; column < 9; column++)
+                    {
+                        cells[row, column].Text = grid.SudokuGrid[column, row].Value.ToString();
+                    }
                 }
+            }
+            else
+            {
+                foreach (Cell cell in csp.Cells)
+                {
+                    cells[cell.PosY, cell.PosX].Text = cell.Value.ToString();
+                }
+
             }
         }
 
         private void BtnResolve_Click(object sender, EventArgs e)
         {
-            if(cells[0, 0].Text != String.Empty)
+            if (!asCSP)
             {
-                Cell[,] solvedSudoku = grid.BacktrackingSearch();
-                grid.SudokuGrid = solvedSudoku;
-                UpdateGridDisplay();
+                if (cells[0, 0].Text != String.Empty)
+                {
+                    Cell[,] solvedSudoku = grid.BacktrackingSearch();
+                    grid.SudokuGrid = solvedSudoku;
+                    UpdateGridDisplay();
+                }
+
             }
+            else
+            {
+                if (cells[0, 0].Text != String.Empty)
+                {
+                    if (csp.BacktrackingSearch())
+                    {
+                        UpdateGridDisplay();
+                    }
+                    else
+                    {
+                        MessageBox.Show("Backtracking failed.");
+                    }
+                }
+
+            }
+
+
+
         }
 
         private void BtnGenerate_Click(object sender, EventArgs e)

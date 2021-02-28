@@ -49,8 +49,7 @@ namespace Sudoku_Graphic
                     if (cell1.PosX == cell2.PosX || cell1.PosY == cell2.PosY ||
                         (squareX1 == squareX2 && squareY1 ==squareY2))
                     {
-                        GraphArc arc = new GraphArc(cell1, cell2);
-                        graphArcs.Add(arc);
+                        graphArcs.Add(new GraphArc(cell1, cell2));
                     }
                 }
             }
@@ -60,24 +59,36 @@ namespace Sudoku_Graphic
         public int RemoveDuplicateArcs()
         {
             int removed = 0;
+            List<GraphArc> nonDuplicatedArcs = new List<GraphArc>(graphArcs);
             foreach(GraphArc arc1 in graphArcs)
             {
                 foreach (GraphArc arc2 in graphArcs)
                 {
-                    if(arc1.IsDuplicata(arc2))
+                    if(arc1.Equals(arc2))
                     {
-                        graphArcs.Remove(arc2);
+                        continue;
+                    }
+                    if(arc1.IsDuplicata(arc2) && nonDuplicatedArcs.Contains(arc1))
+                    {
+                        nonDuplicatedArcs.Remove(arc2);
                         removed++;
                     }
                 }
             }
+            graphArcs = new List<GraphArc>(nonDuplicatedArcs);
             return removed;
         }
 
-        public void BacktrackingSearch()
+        public bool BacktrackingSearch()
         {
             //char[,] cellsAsChar = CellsAsChar();
-            RecursiveBacktracking();
+            return RecursiveBacktracking();
+        }
+
+        public void ClearLists()
+        {
+            cells.Clear();
+            graphArcs.Clear();
         }
         #endregion
 
@@ -93,7 +104,7 @@ namespace Sudoku_Graphic
             foreach(char value in OrderDomainValues(chosenCell))
             {
                 chosenCell.Value = value;
-                if(IsConsistant())
+                if (IsConsistant())
                 {
                     bool success = RecursiveBacktracking();
                     if(success)
