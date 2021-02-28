@@ -69,21 +69,22 @@ namespace Sudoku_Graphic
         /// </summary>
         /// <param name="cell">The instance of the <see cref="Cell"/></param>
         /// <returns>
-        ///   <c>true</c> if the <see cref="Cell"/> is one of the two attributes of this 
-        ///   instance of <see cref="GraphArc"/>; otherwise, <c>false</c>
+        ///   <c>true</c> if the <see cref="Cell"/> is either equal to <see cref="GraphArc.cell1"/> or <see cref="GraphArc.cell2"/>;
+        ///   otherwise, <c>false</c>
         /// </returns>
         public bool IsCellIn(Cell cell)
         {
             return cell1 == cell || cell2 == cell;
         }
+
         /// <summary>
         /// Given one instance of a <see cref="Cell"/>, returns the value of the other <see cref="Cell"/>
         /// connected by this arc.
         /// </summary>
         /// <param name="cell">The first instance of <see cref="Cell"/> connected to this arc.</param>
         /// <returns>
-        /// The field value of cell1 if <param name="cell"> is equal to cell2.
-        /// The field value of cell2 if <param name="cell"> is equal to cell1.
+        /// The field <see cref="Cell.value"/> of <see cref="GraphArc.cell1"/> if <param name="cell"> is equal to <see cref="GraphArc.cell2"/>;
+        /// The field <see cref="Cell.value"/> of <see cref="GraphArc.cell2"/> if <param name="cell"> is equal to <see cref="GraphArc.cell2"/>;
         /// ' ' otherwise.
         /// </returns>
         public char GetOtherCellValue(Cell cell)

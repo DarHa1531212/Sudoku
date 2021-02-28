@@ -9,19 +9,32 @@ namespace Sudoku_Graphic
     public class CSP
     {
         #region Constants
-        int _gridSize = 9;
+        /// <summary>
+        /// The length (in number of cells) of a sudoku square
+        /// </summary>
         int _squareSize = 3;
         #endregion
 
         #region Attributes
+        /// <summary>
+        /// Contains all the <see cref="Cell"/> representing the cells of the sudoku grid.
+        /// </summary>
         private List<Cell> cells;
+        /// <summary>
+        /// Gets and sets <see cref="CSP.cells"/>.
+        /// </summary>
         public List<Cell> Cells { get => cells; set => cells = value; }
 
+        /// <summary>
+        /// Contains all the <see cref="GraphArc"/> representing the binary constraints between the <see cref="Cell"/>.
+        /// </summary>
         private List<GraphArc> graphArcs;
-        public List<GraphArc> GraphArcs { get => graphArcs; set => graphArcs = value; }
         #endregion
 
         #region Ctors
+        /// <summary>
+        /// Initializes a new instance of <see cref="CSP"/>
+        /// </summary>
         public CSP()
         {
             cells = new List<Cell>();
@@ -30,8 +43,11 @@ namespace Sudoku_Graphic
         #endregion
 
         #region Public Methods
-
-
+        /// <summary>
+        /// Generates the constraints (populates graphArcs with <see cref="GraphArc"/>) between the 
+        /// different <see cref="Cell"/> in <see cref="CSP.cells"/> using classic sudoku's rules. Ensures there will be
+        /// no duplicated constraint.
+        /// </summary>
         public void GenerateArcs()
         {
             foreach(Cell cell1 in cells)
@@ -56,6 +72,13 @@ namespace Sudoku_Graphic
             RemoveDuplicateArcs();
         }
 
+        /// <summary>
+        /// Removes any duplicated <see cref="GraphArc"/> in <see cref="CSP.graphArcs"/>. What is a duplicated arc is defined
+        /// in the <see cref="GraphArc.IsDuplicata(GraphArc)"/> method.
+        /// </summary>
+        /// <returns>
+        /// The number of removed <see cref="GraphArc"/>.
+        /// </returns>
         public int RemoveDuplicateArcs()
         {
             int removed = 0;
@@ -79,12 +102,21 @@ namespace Sudoku_Graphic
             return removed;
         }
 
+        /// <summary>
+        /// Launches the backtracking-search algorithm to try and solve the sudoku.
+        /// </summary>
+        /// <returns>
+        ///   <c>true</c> if the sudoku has been resolved; otherwise <c>false</c>.
+        /// </returns>
         public bool BacktrackingSearch()
         {
             //char[,] cellsAsChar = CellsAsChar();
             return RecursiveBacktracking();
         }
 
+        /// <summary>
+        /// Clears <see cref="CSP.cells"/> and <see cref="CSP.graphArcs"/>.
+        /// </summary>
         public void ClearLists()
         {
             cells.Clear();
@@ -94,6 +126,15 @@ namespace Sudoku_Graphic
 
         #region Private Methods
 
+        /// <summary>
+        /// The recursive part of the backtracking-search algorithm. Iterates over the possible <see cref="Cell.value"/> of every
+        /// <see cref="Cell"/> whose <see cref="Cell.value"/> is equal to '.' until either a solution is found or every possible state
+        /// has been tested.
+        /// </summary>
+        /// <returns>
+        ///  <c>true</c> if a solution has been found;
+        ///  <c>false</c> when the tested state leads to a invalid constraint.
+        /// </returns>
         private bool RecursiveBacktracking()
         {
             if (IsComplete()) {
@@ -116,6 +157,14 @@ namespace Sudoku_Graphic
             }
             return false;
         }
+
+
+        /// <summary>
+        /// Checks if the actual CSP assignment is consistent.
+        /// </summary>
+        /// <returns>
+        ///   <c>true</c> if every constraint in the <see cref="CSP.graphArcs"/> is respected.
+        /// </returns>
         private bool IsConsistant()
         {
             foreach (GraphArc arc in graphArcs)
@@ -128,6 +177,13 @@ namespace Sudoku_Graphic
             return true;
         }
 
+        /// <summary>
+        /// Checks whether the actual assignment of the <see cref="CSP"/> is respected.
+        /// </summary>
+        /// <returns>
+        ///   <c>true</c> if the actual assignment of this instance of <see cref="CSP"/> is complete;
+        ///   otherwise <c>false</c>.
+        /// </returns>
         private bool IsComplete()
         {
             foreach (Cell cell in cells)
@@ -140,7 +196,24 @@ namespace Sudoku_Graphic
             return true;
         }
 
+        /// <summary>
+        /// Searchs for a <see cref="Cell"/> in <see cref="CSP.cells"/> with a <see cref="Cell.value"/> of '.'.
+        /// </summary>
+        /// <returns>
+        /// The <see cref="Cell"/> that satisfies the most the conditions defined in the method.
+        /// </returns>
         private Cell SelectUnassignedVariable()
+        {
+            return SelectFirstUnassignedVariable();
+        }
+
+        /// <summary>
+        /// Searchs for a <see cref="Cell"/> in <see cref="CSP.cells"/> with a <see cref="Cell.value"/> of '.'.
+        /// </summary>
+        /// <returns>
+        /// The first <see cref="Cell"/> found that satisfies the condition; <see cref="null"/> if no matching <see cref="Cell"/> found.
+        /// </returns>
+        private Cell SelectFirstUnassignedVariable()
         {
             foreach(Cell cell in cells)
             {
@@ -152,6 +225,13 @@ namespace Sudoku_Graphic
             return null;
         }
 
+        /// <summary>
+        /// Iterates over <see cref="CSP.cells"/> and returns the cell with the minimum number of
+        /// <see cref="Cell.value"/> that wouldn't make the assignment inconsistent.
+        /// </summary>
+        /// <returns>
+        /// The <see cref="Cell"/> that satisfies this condition.
+        /// </returns>
         private Cell MRV()
         {
             int minimumValueCount = int.MaxValue;
@@ -167,6 +247,14 @@ namespace Sudoku_Graphic
             }
             return returnedCell;
         }
+
+        /// <summary>
+        /// Iterates over <see cref="CSP.cells"/> and returns the cell with the maximul number of
+        /// constraints. The constraints are represented in <see cref="CSP.graphArcs"/>.
+        /// </summary>
+        /// <returns>
+        /// The <see cref="Cell"/> that satisfies this condition.
+        /// </returns>
         private Cell DegreeHeuristic()
         {
             int maximumConstraintsCount = int.MinValue;
@@ -184,6 +272,14 @@ namespace Sudoku_Graphic
 
         }
 
+        /// <summary>
+        /// Given a <see cref="Cell"/>, returns a list of every possible <see cref="Cell.value"/> in its 
+        /// <see cref="Cell.domain"/> that wouldn't make the assignment inconsistent.
+        /// </summary>
+        /// <param name="cell">The <see cref="Cell"/> we want to give a value to.</param>
+        /// <returns>
+        /// The list of <see cref="char"/> representing the lit of <see cref="Cell.value"/>.
+        /// </returns>
         private List<char> GetRemainingPossibleValues(Cell cell)
         {
             List<char> remainingValues = new List<char>(cell.Domain);
@@ -196,12 +292,21 @@ namespace Sudoku_Graphic
             return remainingValues;
         }
 
+        /// <summary>
+        /// Given a <see cref="Cell"/>, returns the number of "open" constraints on this cell.
+        /// </summary>
+        /// <param name="cell">The tested <see cref="Cell"/>.</param>
+        /// <returns>
+        /// The number of <see cref="GraphArc"/> in <see cref="CSP.graphArcs"/> whose attribute 
+        /// <see cref="GraphArc.cell1"/> or <see cref="GraphArc.cell1=2"/> is equal <param name="cell"> and
+        /// where the other attribute's <see cref="Cell.value"/> is equal to '.'.
+        /// </returns>
         private int GetNumberOfConstraintsOnCell(Cell cell)
         {
             int constraintsOnCell = 0;
             foreach (GraphArc arc in graphArcs)
             {
-                if(arc.IsCellIn(cell))
+                if(arc.IsCellIn(cell) && arc.GetOtherCellValue(cell) == '.')
                 {
                     constraintsOnCell++;
                 }
@@ -209,11 +314,39 @@ namespace Sudoku_Graphic
             return constraintsOnCell;
         }
 
+        /// <summary>
+        /// Orders every <see cref="Cell.value"/> in a <see cref="Cell"/>'s <see cref="Cell.domain"/>.
+        /// </summary>
+        /// <param name="cell">The <see cref="Cell"/> whose values will be ordered.</param>
+        /// <returns>
+        /// A list of char representing the ordered list of <see cref="Cell.value"/>.
+        /// </returns>
         private List<char> OrderDomainValues(Cell cell)
+        {
+            return GetUnorderedCellValues(cell);
+        }
+
+        /// <summary>
+        /// Returns a given <see cref="Cell"/>'s <see cref="Cell.domain"/>.
+        /// </summary>
+        /// <param name="cell">The given <see cref="Cell"/>.</param>
+        /// <returns>
+        /// <param name="cell">'s <see cref="Cell.domain"/>.
+        /// </returns>
+        private List<char> GetUnorderedCellValues(Cell cell)
         {
             return cell.Domain;
         }
 
+        /// <summary>
+        /// Orders the <see cref="Cell.value"/> in a <see cref="Cell"/>'s <see cref="Cell.domain"/> in a descending order,
+        /// starting with the <see cref="Cell.value"/> that, if given to the <see cref="Cell"/> <paramref name="cell"/>, would result in
+        /// the amount of remaining values (keeping the assignment consistent in the cell with the least amount of values) being the highest.
+        /// </summary>
+        /// <param name="cell">The tested <see cref="Cell"/>.</param>
+        /// <returns>
+        /// An ordered list of char representing the ordered <see cref="Cell.value"/>.
+        /// </returns>
         private List<char> LeastConstraingValue(Cell cell)
         {
             Dictionary<char, int> remainingMinimalValues = new Dictionary<char, int>();
@@ -222,7 +355,6 @@ namespace Sudoku_Graphic
             {
                 cell.Value = c;
                 int minRemainingValue = int.MaxValue;
-                //------
                 foreach(Cell cell2 in cells)
                 {
                     if(cell2.Value == '.')

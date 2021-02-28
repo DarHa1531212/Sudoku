@@ -16,7 +16,7 @@ namespace Sudoku_Graphic
         /// </summary>
         private int posX;
         /// <summary>
-        /// Gets and sets the x position of the cell.
+        /// Gets and sets <see cref="Cell.posX"/>.
         /// </summary>
         public int PosX { get => posX; set => posX = value; }
 
@@ -25,7 +25,7 @@ namespace Sudoku_Graphic
         /// </summary>
         private int posY;
         /// <summary>
-        /// Gets and sets the y position of the cell.
+        /// Gets and sets <see cref="Cell.posY"/>.
         /// </summary>
         public int PosY { get => posY; set => posY = value; }
 
@@ -34,7 +34,7 @@ namespace Sudoku_Graphic
         /// </summary>
         private char value;
         /// <summary>
-        /// Gets and sets the value of the cell.
+        /// Gets and sets <see cref="Cell.value"/>.
         /// </summary>
         public char Value { get => value; set => this.value = value; }
 
@@ -43,7 +43,7 @@ namespace Sudoku_Graphic
         /// </summary>
         private List<char> domain;
         /// <summary>
-        /// Gets and sets the domain of the cell.
+        /// Gets and sets <see cref="Cell.domain"/>.
         /// </summary>
         public List<char> Domain { get => domain; set => domain = value; }
         #endregion
