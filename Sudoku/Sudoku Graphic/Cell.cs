@@ -42,6 +42,33 @@ namespace Sudoku_Graphic
 
         #region Operators
 
+        protected bool Equals(Cell cell2)
+        {
+            return posX == cell2.PosX &&
+                posY == cell2.PosY &&
+                value == cell2.Value &&
+                domain.All(cell2.Domain.Contains);
+        }
+
+        public override bool Equals(object obj)
+        {
+            if (ReferenceEquals(null, obj)) return false;
+            if (ReferenceEquals(this, obj)) return true;
+            if (obj.GetType() != this.GetType()) return false;
+            return Equals((Cell)obj);
+        }
+
+        public override int GetHashCode()
+        {
+            int hash = posX.GetHashCode()^5 +
+                8*posY.GetHashCode()^17 +
+                6*value.GetHashCode()^5;
+            foreach (char c in domain)
+            {
+                hash += c.GetHashCode() ^ 9;
+            }
+            return hash;
+        }
         #endregion
     }
 }
