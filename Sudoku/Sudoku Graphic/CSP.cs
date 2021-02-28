@@ -298,7 +298,7 @@ namespace Sudoku_Graphic
         /// <param name="cell">The tested <see cref="Cell"/>.</param>
         /// <returns>
         /// The number of <see cref="GraphArc"/> in <see cref="CSP.graphArcs"/> whose attribute 
-        /// <see cref="GraphArc.cell1"/> or <see cref="GraphArc.cell1=2"/> is equal <param name="cell"> and
+        /// <see cref="GraphArc.cell1"/> or <see cref="GraphArc.cell2"/> is equal <param name="cell"> and
         /// where the other attribute's <see cref="Cell.value"/> is equal to '.'.
         /// </returns>
         private int GetNumberOfConstraintsOnCell(Cell cell)
