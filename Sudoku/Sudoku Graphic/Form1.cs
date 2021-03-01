@@ -19,32 +19,55 @@ namespace Sudoku_Graphic
 
         bool asCSP = true;
 
+        GridDimensions actualDimensions;
+
         public Form1()
         {
             InitializeComponent();
             this.AutoSize = true;
+
+            actualDimensions = new GridDimensions(9, 9, 3, 3);
             createCells();
             Sudoku.AutoSize = true;
         }
 
         Label[,] cells = new Label[9, 9];
 
+        private void recreateCells()
+        {
+            disposeOfCells();
+            createCells();
+        }
+
+        private void disposeOfCells()
+        {
+            for (int i = 0; i < cells.GetLength(0); ++i)
+            {
+                for (int j = 0; j < cells.GetLength(1); ++j)
+                {
+                    cells[j, i].Dispose();
+                }
+            }
+        }
+
         private void createCells()
         {
+            int size = actualDimensions.GridSizeX;
+            cells = new Label[size, size];
             // design inspired by code found at https://playwithcsharpdotnet.blogspot.com/
-            for (int i = 0; i < 9; i++)
+            for (int i = 0; i < size; i++)
             {
-                for (int j = 0; j < 9; j++)
+                for (int j = 0; j < size; j++)
                 {
                     cells[i, j] = new Label();
-                    cells[i, j].Font = new Font(SystemFonts.DefaultFont.FontFamily, 20);
-                    cells[i, j].Font = new Font(SystemFonts.DefaultFont.FontFamily, 20);
-                    cells[i, j].Size = new Size(40, 40);
+                    cells[i, j].Font = new Font(SystemFonts.DefaultFont.FontFamily, 180/size);
+                    cells[i, j].Font = new Font(SystemFonts.DefaultFont.FontFamily, 180 / size);
+                    cells[i, j].Size = new Size(360/size, 360 / size);
                     cells[i, j].BorderStyle = BorderStyle.Fixed3D;
                     cells[i, j].TextAlign = ContentAlignment.MiddleCenter;
                     cells[i, j].ForeColor = SystemColors.ControlDarkDark;
-                    cells[i, j].Location = new Point(i * 40, j * 40);
-                    cells[i, j].BackColor = ((i / 3) + (j / 3)) % 2 == 0 ? SystemColors.Control : Color.LightGray;
+                    cells[i, j].Location = new Point(i * 360/size, j * 360 / size);
+                    cells[i, j].BackColor = ((i / actualDimensions.NumberOfSquaresOnLine()) + (j / actualDimensions.NumberOfSquaresOnColumn())) % 2 == 0 ? SystemColors.Control : Color.LightGray;
 
                     Sudoku.Controls.Add(cells[i, j]);
                 }
@@ -105,17 +128,13 @@ namespace Sudoku_Graphic
                 return false;
             }
 
-            if (dimensions.GridSizeX > 9)
-            {
-                MessageBox.Show("La taille maximale supportée est de 9*9");
-                return false;
-            }
-
             if (asCSP)
             {
                 csp.ClearLists();
                 csp.Dimensions = dimensions;
             }
+            actualDimensions = dimensions;
+            recreateCells();
 
             string cleanContent = gridContent.Replace("!", "")
                 .Replace(" ", "")
@@ -198,15 +217,17 @@ namespace Sudoku_Graphic
             else
             {
                 // Step 1 : Making the whole grid black
-                for (int i = 0; i < 9; ++i)
+                /*
+                for (int i = 0; i < actualDimensions.GridSizeX; ++i)
                 {
-                    for (int j = 0; j < 9; ++j)
+                    for (int j = 0; j < actualDimensions.GridSizeX; ++j)
                     {
                         cells[i, j].Text = " ";
                         cells[i, j].BackColor = Color.Black;
                     }
 
                 }
+                */
                 // Step 2 : Writing on the cells
                 foreach (GraphNode node in csp.Nodes)
                 {

@@ -60,14 +60,18 @@ namespace Sudoku_Graphic
         {
             posX = x;
             posY = y;
-            if(domainSize > 9 || domainSize < 1)
+            if(domainSize < 1)
             {
                 throw new ArgumentException("La taille du domaine doit être comprise entre 1 et 9");
             }
             domain = new List<char>();
-            for(int i = 1; i <= domainSize; ++i)
+            for(int i = 1; i <= Math.Min(9, domainSize); ++i)
             {
-                domain.Add((char)(i + 48));
+                domain.Add((char)(i + '0'));
+            }
+            for(int i = 0; i < Math.Max(domainSize - 9, 0); ++i)
+            {
+                domain.Add((char)(i + 'A'));
             }
         }
         /// <summary>
