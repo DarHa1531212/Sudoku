@@ -77,14 +77,17 @@ namespace Sudoku_Graphic
                         fileContent = reader.ReadToEnd();
                     }
 
-                    DecodeGrid(fileContent);
+                    if (DecodeGrid(fileContent))
+                    {
 
-                    UpdateGridDisplay();
+                        UpdateGridDisplay();
+
+                    }
                 }
             }
         }
 
-        private void DecodeGrid(string gridContent)
+        private bool DecodeGrid(string gridContent)
         {
             gridContent = gridContent.Replace("\r", "")
                     .Replace(" ", "");
@@ -93,19 +96,19 @@ namespace Sudoku_Graphic
             GridDimensions dimensions = FindGridDimensions(gridContent);
             if (dimensions == null)
             {
-                return;
+                return false;
             }
 
             if (!asCSP && dimensions.GridSizeY != 9)
             {
                 MessageBox.Show("La taille de sudoku supportée est de 9*9 uniquement avec une structure de tableau.");
-                return;
+                return false;
             }
 
-            if(dimensions.GridSizeX > 9)
+            if (dimensions.GridSizeX > 9)
             {
                 MessageBox.Show("La taille maximale supportée est de 9*9");
-                return;
+                return false;
             }
 
             if (asCSP)
@@ -121,16 +124,17 @@ namespace Sudoku_Graphic
             int actualIndex = 0;
             foreach (string column in columns)
             {
-                if(column.Length == 0)
+                if (column.Length == 0)
                 {
                     continue;
                 }
-                for(int j = 0; j < column.Length; ++j)
+                for (int j = 0; j < column.Length; ++j)
                 {
-                    if(!asCSP)
+                    if (!asCSP)
                     {
                         grid.SudokuGrid[actualIndex, j].Value = Convert.ToChar(column[j]);
-                    } else
+                    }
+                    else
                     {
                         Cell cell = new Cell(actualIndex, j, dimensions.GridSizeX);
                         cell.Value = Convert.ToChar(column[j]);
@@ -164,6 +168,7 @@ namespace Sudoku_Graphic
             }
             */
             csp.GenerateArcs();
+            return true;
         }
 
         private void UpdateGridDisplay()
@@ -192,7 +197,7 @@ namespace Sudoku_Graphic
             else
             {
                 // Step 1 : Making the whole grid black
-                for(int i = 0; i < 9; ++i)
+                for (int i = 0; i < 9; ++i)
                 {
                     for (int j = 0; j < 9; ++j)
                     {
@@ -208,10 +213,11 @@ namespace Sudoku_Graphic
                     int squareY = cell.PosY / csp.Dimensions.SquareSizeY;
                     int squareX = cell.PosX / csp.Dimensions.SquareSizeX;
 
-                    if ((squareX + squareY)%2 == 0)
+                    if ((squareX + squareY) % 2 == 0)
                     {
                         cells[cell.PosY, cell.PosX].BackColor = Color.White;
-                    } else
+                    }
+                    else
                     {
                         cells[cell.PosY, cell.PosX].BackColor = Color.LightGray;
                     }
@@ -313,8 +319,14 @@ namespace Sudoku_Graphic
                 if (cells[0, 0].Text != String.Empty)
                 {
                     Cell[,] solvedSudoku = grid.BacktrackingSearch();
-                    grid.SudokuGrid = solvedSudoku;
-                    UpdateGridDisplay();
+                    if(solvedSudoku == null)
+                    {
+                        MessageBox.Show("Backtracking failed.");
+                    } else
+                    {
+                        grid.SudokuGrid = solvedSudoku;
+                        UpdateGridDisplay();
+                    }
                 }
 
             }

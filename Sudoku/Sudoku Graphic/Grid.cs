@@ -44,7 +44,11 @@ namespace Sudoku_Graphic
         public Cell[,] BacktrackingSearch()
         {
             //char[,] cellsAsChar = CellsAsChar();
-            return RecursiveBacktracking(sudokuGrid);
+            if(IsFullyConsistent(sudokuGrid))
+            {
+                return RecursiveBacktracking(sudokuGrid);
+            }
+            return null;
         }
 
         public Cell[,] RecursiveBacktracking(Cell[,] grid)
@@ -330,6 +334,22 @@ namespace Sudoku_Graphic
                         }
                     }
                 }
+            }
+            return true;
+        }
+
+        private bool IsFullyConsistent(Cell[,] grid)
+        {
+            for(int i = 0; i < 9; ++i)
+            {
+                for (int j = 0; j < 9; ++j)
+                {
+                    if(!IsConsistent(new Tuple<int, int>(j, i), grid[j, i].Value, grid))
+                    {
+                        return false;
+                    }
+                }
+
             }
             return true;
         }
