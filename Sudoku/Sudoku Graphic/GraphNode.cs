@@ -8,18 +8,45 @@ namespace Sudoku_Graphic
 {
     public class GraphNode
     {
+        #region Attributes
+        /// <summary>
+        /// The sudoku cell represented by this node.
+        /// </summary>
         private Cell cell;
+        /// <summary>
+        /// Gets and sets <see cref="GraphNode.cell"/>
+        /// </summary>
         public Cell Cell { get => cell; set => cell = value; }
 
+        /// <summary>
+        /// The list of arcs connecting this node in the CSP graph.
+        /// </summary>
         List<GraphArc> connectedArcs;
+        /// <summary>
+        /// Gets and sets <see cref="GraphNode.connectedArcs"/>
+        /// </summary>
         public List<GraphArc> ConnectedArcs { get => connectedArcs; set => connectedArcs = value; }
+        #endregion
 
+        #region Ctors
+        /// <summary>
+        /// Initializes an instance of <see cref="GraphNode"/>.
+        /// </summary>
+        /// <param name="_cell">The <see cref="Cell"/> represented by the node.</param>
         public GraphNode(Cell _cell)
         {
             cell = _cell;
             connectedArcs = new List<GraphArc>();
         }
+        #endregion
 
+        /// <summary>
+        /// Checks whether the given <see cref="GraphNode"/> is identical to this instance.
+        /// </summary>
+        /// <param name="node2">The tested <see cref="GraphNode"/>.</param>
+        /// <returns>
+        ///   <c>true</c> if both <see cref="GraphNode"/> are determined equal; otherwise <c>false</c>.
+        /// </returns>
         #region Operators
         protected bool Equals(GraphNode node2)
         {
@@ -43,10 +70,10 @@ namespace Sudoku_Graphic
         }
 
         /// <summary>
-        /// Returns the hashcode of this instance of <see cref="Cell"/>.
+        /// Returns the hashcode of this instance of <see cref="GraphNode"/>.
         /// </summary>
         /// <returns>
-        /// The hashcode of this instance of <see cref="Cell"/>.
+        /// The hashcode of this instance of <see cref="GraphNode"/>.
         /// </returns>
         public override int GetHashCode()
         {

@@ -361,8 +361,6 @@ namespace Sudoku_Graphic
 
             return orderedValues;
         }
-
-
         #endregion
     }
 }
