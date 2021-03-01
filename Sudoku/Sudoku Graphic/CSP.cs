@@ -30,9 +30,9 @@ namespace Sudoku_Graphic
 
         #region Public Methods
         /// <summary>
-        /// Generates the constraints (populates graphArcs with <see cref="GraphArc"/>) between the 
-        /// different <see cref="Cell"/> in <see cref="CSP.cells"/> using classic sudoku's rules. Ensures there will be
-        /// no duplicated constraint.
+        /// Generates the constraints (populates each <see cref="GraphNode"/> of <see cref="CSP.nodes"/>) between the 
+        /// different <see cref="GraphNode"/> in <see cref="CSP.nodes"/> using classic sudoku's rules.
+        /// Note than each constraint will appear "twice" : one from every node to the other
         /// </summary>
         public void GenerateArcs()
         {
@@ -58,6 +58,7 @@ namespace Sudoku_Graphic
                 }
             }
         }
+
         /// <summary>
         /// Launches the backtracking-search algorithm to try and solve the sudoku.
         /// </summary>
@@ -66,7 +67,7 @@ namespace Sudoku_Graphic
         /// </returns>
         public bool BacktrackingSearch()
         {
-            //char[,] cellsAsChar = CellsAsChar();
+            // We first check if the grid respects the rules.
             if(!IsConsistant())
             {
                 return false;
@@ -75,7 +76,7 @@ namespace Sudoku_Graphic
         }
 
         /// <summary>
-        /// Clears <see cref="CSP.cells"/> and <see cref="CSP.graphArcs"/>.
+        /// Clears <see cref="CSP.nodes"/>.
         /// </summary>
         public void ClearLists()
         {
@@ -119,7 +120,7 @@ namespace Sudoku_Graphic
 
 
         /// <summary>
-        /// Checks if the actual CSP assignment is consistent.
+        /// Checks if the actual entire CSP assignment is consistent.
         /// </summary>
         /// <returns>
         ///   <c>true</c> if every constraint in the <see cref="CSP.graphArcs"/> is respected.
@@ -139,6 +140,14 @@ namespace Sudoku_Graphic
             return true;
         }
 
+        /// <summary>
+        /// Checks if the <see cref="GraphNode.cell"/> of a given <see cref="GraphNode"/> respects all constraints.
+        /// </summary>
+        /// <param name="node"></param>
+        /// <returns>
+        ///   <c>true</c> if every constraint in the <see cref="GraphNode.connectedArcs"/> of the given
+        ///   <paramref name="node"></paramref> is respected; otherwise <c>false</c>.
+        /// </returns>
         private bool IsConsistant(GraphNode node)
         {
             foreach(GraphArc arc in node.ConnectedArcs)
@@ -152,7 +161,7 @@ namespace Sudoku_Graphic
         }
 
         /// <summary>
-        /// Checks whether the actual assignment of the <see cref="CSP"/> is respected.
+        /// Checks whether the actual assignment of the <see cref="CSP"/> is complete.
         /// </summary>
         /// <returns>
         ///   <c>true</c> if the actual assignment of this instance of <see cref="CSP"/> is complete;
@@ -171,10 +180,10 @@ namespace Sudoku_Graphic
         }
 
         /// <summary>
-        /// Searchs for a <see cref="Cell"/> in <see cref="CSP.cells"/> with a <see cref="Cell.value"/> of '.'.
+        /// Searchs for a <see cref="GraphNode"/> in <see cref="CSP.nodes"/> with a <see cref="Cell"/> whose <see cref="Cell.value"/> of '.'.
         /// </summary>
         /// <returns>
-        /// The <see cref="Cell"/> that satisfies the most the conditions defined in the method.
+        /// The <see cref="GraphNode"/> that satisfies the most the conditions defined in the method.
         /// </returns>
         private GraphNode SelectUnassignedVariable()
         {
@@ -182,10 +191,10 @@ namespace Sudoku_Graphic
         }
 
         /// <summary>
-        /// Searchs for a <see cref="Cell"/> in <see cref="CSP.cells"/> with a <see cref="Cell.value"/> of '.'.
+        /// Searchs for a <see cref="GraphNode"/> in <see cref="CSP.nodes"/> with a <see cref="Cell"/> whose <see cref="Cell.value"/> of '.'.
         /// </summary>
         /// <returns>
-        /// The first <see cref="Cell"/> found that satisfies the condition; <see cref="null"/> if no matching <see cref="Cell"/> found.
+        /// The first <see cref="GraphNode"/> found that satisfies the condition; <see cref="null"/> if no matching <see cref="GraphNode"/> found.
         /// </returns>
         private GraphNode SelectFirstUnassignedVariable()
         {
@@ -200,11 +209,11 @@ namespace Sudoku_Graphic
         }
 
         /// <summary>
-        /// Iterates over <see cref="CSP.cells"/> and returns the cell with the minimum number of
+        /// Iterates over <see cref="CSP.nodes"/> and returns the <see cref="GraphNode"/> with the <see cref="Cell"/> with the minimum number of
         /// <see cref="Cell.value"/> that wouldn't make the assignment inconsistent.
         /// </summary>
         /// <returns>
-        /// The <see cref="Cell"/> that satisfies this condition.
+        /// The <see cref="GraphNode"/> that satisfies this condition.
         /// </returns>
         private GraphNode MRV()
         {
@@ -223,11 +232,11 @@ namespace Sudoku_Graphic
         }
 
         /// <summary>
-        /// Iterates over <see cref="CSP.cells"/> and returns the cell with the maximul number of
-        /// constraints. The constraints are represented in <see cref="CSP.graphArcs"/>.
+        /// Iterates over <see cref="CSP.nodes"/> and returns the <see cref="GraphNode"/> with the maximul number of
+        /// constraints. The constraints are represented in <see cref="GraphNode.connectedArcs"/>.
         /// </summary>
         /// <returns>
-        /// The <see cref="Cell"/> that satisfies this condition.
+        /// The <see cref="GraphNode"/> that satisfies this condition.
         /// </returns>
         private GraphNode DegreeHeuristic()
         {
@@ -235,7 +244,7 @@ namespace Sudoku_Graphic
             GraphNode returnedNode = null;
             foreach (GraphNode node in nodes)
             {
-                int cellRemainingRestraintsCount = GetNumberOfConstraintsOnCell(node);
+                int cellRemainingRestraintsCount = GetNumberOfConstraintsOnNode(node);
                 if (cellRemainingRestraintsCount > maximumConstraintsCount)
                 {
                     returnedNode = node;
@@ -247,12 +256,12 @@ namespace Sudoku_Graphic
         }
 
         /// <summary>
-        /// Given a <see cref="Cell"/>, returns a list of every possible <see cref="Cell.value"/> in its 
-        /// <see cref="Cell.domain"/> that wouldn't make the assignment inconsistent.
+        /// Given a <see cref="GraphNode"/>, returns a list of every possible <see cref="Cell.value"/> in its 
+        /// <see cref="Cell"/>'s <see cref="Cell.domain"/> that wouldn't make the assignment inconsistent.
         /// </summary>
-        /// <param name="cell">The <see cref="Cell"/> we want to give a value to.</param>
+        /// <param name="node">The <see cref="GraphNode"/> we want to give a value to.</param>
         /// <returns>
-        /// The list of <see cref="char"/> representing the lit of <see cref="Cell.value"/>.
+        /// The list of <see cref="char"/> representing the list of <see cref="Cell.value"/>.
         /// </returns>
         private List<char> GetRemainingPossibleValues(GraphNode node)
         {
@@ -267,15 +276,14 @@ namespace Sudoku_Graphic
         }
 
         /// <summary>
-        /// Given a <see cref="Cell"/>, returns the number of "open" constraints on this cell.
+        /// Given a <see cref="GraphNode"/>, returns the number of "open" constraints on this <see cref="GraphNode"/>.
         /// </summary>
-        /// <param name="cell">The tested <see cref="Cell"/>.</param>
+        /// <param name="node">The tested <see cref="GraphNode"/>.</param>
         /// <returns>
-        /// The number of <see cref="GraphArc"/> in <see cref="CSP.graphArcs"/> whose attribute 
-        /// <see cref="GraphArc.cell1"/> or <see cref="GraphArc.cell2"/> is equal <param name="cell"> and
-        /// where the other attribute's <see cref="Cell.value"/> is equal to '.'.
+        /// The number of <see cref="GraphArc"/> in <see cref="GraphNode.connectedArcs"/> 
+        /// where the other <see cref="GraphNode"/>'s <see cref="GraphNode.cell"/>'s <see cref="Cell.value"/> is equal to '.'.
         /// </returns>
-        private int GetNumberOfConstraintsOnCell(GraphNode node)
+        private int GetNumberOfConstraintsOnNode(GraphNode node)
         {
             int constraintsOnCell = 0;
             foreach (GraphArc arc in node.ConnectedArcs)
@@ -291,7 +299,8 @@ namespace Sudoku_Graphic
         /// <summary>
         /// Orders every <see cref="Cell.value"/> in a <see cref="Cell"/>'s <see cref="Cell.domain"/>.
         /// </summary>
-        /// <param name="cell">The <see cref="Cell"/> whose values will be ordered.</param>
+        /// <param name="node">The <see cref="GraphNode"/> whose <see cref="Cell"/>'s <see cref="Cell.value"/>
+        /// will be ordered.</param>
         /// <returns>
         /// A list of char representing the ordered list of <see cref="Cell.value"/>.
         /// </returns>
@@ -303,9 +312,9 @@ namespace Sudoku_Graphic
         /// <summary>
         /// Returns a given <see cref="Cell"/>'s <see cref="Cell.domain"/>.
         /// </summary>
-        /// <param name="cell">The given <see cref="Cell"/>.</param>
+        /// <param name="node">The given <see cref="GraphNode"/>.</param>
         /// <returns>
-        /// <param name="cell">'s <see cref="Cell.domain"/>.
+        /// <param name="node">'s <see cref="Cell"/>'s <see cref="Cell.domain"/>.
         /// </returns>
         private List<char> GetUnorderedCellValues(GraphNode node)
         {
@@ -317,7 +326,7 @@ namespace Sudoku_Graphic
         /// starting with the <see cref="Cell.value"/> that, if given to the <see cref="Cell"/> <paramref name="cell"/>, would result in
         /// the amount of remaining values (keeping the assignment consistent in the cell with the least amount of values) being the highest.
         /// </summary>
-        /// <param name="cell">The tested <see cref="Cell"/>.</param>
+        /// <param name="node">The <see cref="GraphNode"/> whose <see cref="GraphNode.cell"/> is tested.</param>
         /// <returns>
         /// An ordered list of char representing the ordered <see cref="Cell.value"/>.
         /// </returns>
