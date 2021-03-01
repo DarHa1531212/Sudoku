@@ -55,6 +55,7 @@
       <DependentUpon>Form1.cs</DependentUpon>
     </Compile>
     <Compile Include="GraphArc.cs" />
+    <Compile Include="GraphNode.cs" />
     <Compile Include="Grid.cs" />
     <Compile Include="GridDimensions.cs" />
     <Compile Include="Program.cs" />

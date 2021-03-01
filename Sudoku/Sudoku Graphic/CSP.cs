@@ -9,22 +9,13 @@ namespace Sudoku_Graphic
     public class CSP
     {
         #region Attributes
-        /// <summary>
-        /// Contains all the <see cref="Cell"/> representing the cells of the sudoku grid.
-        /// </summary>
-        private List<Cell> cells;
-        /// <summary>
-        /// Gets and sets <see cref="CSP.cells"/>.
-        /// </summary>
-        public List<Cell> Cells { get => cells; set => cells = value; }
-
-        /// <summary>
-        /// Contains all the <see cref="GraphArc"/> representing the binary constraints between the <see cref="Cell"/>.
-        /// </summary>
-        private List<GraphArc> graphArcs;
 
         public GridDimensions Dimensions { get => dimensions; set => dimensions = value; }
         private GridDimensions dimensions;
+
+        public List<GraphNode> Nodes { get => nodes; set => nodes = value; }
+        private List<GraphNode> nodes;
+
         #endregion
 
         #region Ctors
@@ -33,8 +24,7 @@ namespace Sudoku_Graphic
         /// </summary>
         public CSP()
         {
-            cells = new List<Cell>();
-            graphArcs = new List<GraphArc>();
+            nodes = new List<GraphNode>();
         }
         #endregion
 
@@ -46,12 +36,14 @@ namespace Sudoku_Graphic
         /// </summary>
         public void GenerateArcs()
         {
-            foreach(Cell cell1 in cells)
+            foreach(GraphNode node1 in nodes)
             {
+                Cell cell1 = node1.Cell;
                 int squareX1 = cell1.PosX / dimensions.SquareSizeX;
                 int squareY1 = cell1.PosY / dimensions.SquareSizeY;
-                foreach(Cell cell2 in cells)
+                foreach(GraphNode node2 in nodes)
                 {
+                    Cell cell2 = node2.Cell;
                     if(cell1.Equals(cell2))
                     {
                         continue;
@@ -61,43 +53,11 @@ namespace Sudoku_Graphic
                     if (cell1.PosX == cell2.PosX || cell1.PosY == cell2.PosY ||
                         (squareX1 == squareX2 && squareY1 ==squareY2))
                     {
-                        graphArcs.Add(new GraphArc(cell1, cell2));
+                        node1.ConnectedArcs.Add(new GraphArc(node1, node2));
                     }
                 }
             }
-            RemoveDuplicateArcs();
         }
-
-        /// <summary>
-        /// Removes any duplicated <see cref="GraphArc"/> in <see cref="CSP.graphArcs"/>. What is a duplicated arc is defined
-        /// in the <see cref="GraphArc.IsDuplicata(GraphArc)"/> method.
-        /// </summary>
-        /// <returns>
-        /// The number of removed <see cref="GraphArc"/>.
-        /// </returns>
-        public int RemoveDuplicateArcs()
-        {
-            int removed = 0;
-            List<GraphArc> nonDuplicatedArcs = new List<GraphArc>(graphArcs);
-            foreach(GraphArc arc1 in graphArcs)
-            {
-                foreach (GraphArc arc2 in graphArcs)
-                {
-                    if(arc1.Equals(arc2))
-                    {
-                        continue;
-                    }
-                    if(arc1.IsDuplicata(arc2) && nonDuplicatedArcs.Contains(arc1))
-                    {
-                        nonDuplicatedArcs.Remove(arc2);
-                        removed++;
-                    }
-                }
-            }
-            graphArcs = new List<GraphArc>(nonDuplicatedArcs);
-            return removed;
-        }
-
         /// <summary>
         /// Launches the backtracking-search algorithm to try and solve the sudoku.
         /// </summary>
@@ -107,6 +67,10 @@ namespace Sudoku_Graphic
         public bool BacktrackingSearch()
         {
             //char[,] cellsAsChar = CellsAsChar();
+            if(!IsConsistant())
+            {
+                return false;
+            }
             return RecursiveBacktracking();
         }
 
@@ -115,8 +79,7 @@ namespace Sudoku_Graphic
         /// </summary>
         public void ClearLists()
         {
-            cells.Clear();
-            graphArcs.Clear();
+            nodes.Clear();
         }
         #endregion
 
@@ -136,12 +99,12 @@ namespace Sudoku_Graphic
             if (IsComplete()) {
                 return true;
             }
-            Cell chosenCell = SelectUnassignedVariable();
+            GraphNode chosenNode = SelectUnassignedVariable();
 
-            foreach(char value in OrderDomainValues(chosenCell))
+            foreach(char value in OrderDomainValues(chosenNode))
             {
-                chosenCell.Value = value;
-                if (IsConsistant())
+                chosenNode.Cell.Value = value;
+                if (IsConsistant(chosenNode))
                 {
                     bool success = RecursiveBacktracking();
                     if(success)
@@ -149,7 +112,7 @@ namespace Sudoku_Graphic
                         return true;
                     }
                 }
-                chosenCell.Value = '.';
+                chosenNode.Cell.Value = '.';
             }
             return false;
         }
@@ -163,7 +126,22 @@ namespace Sudoku_Graphic
         /// </returns>
         private bool IsConsistant()
         {
-            foreach (GraphArc arc in graphArcs)
+            foreach (GraphNode node in nodes)
+            {
+                foreach(GraphArc arc in node.ConnectedArcs)
+                {
+                    if(!arc.IsConsistant())
+                    {
+                        return false;
+                    }
+                }
+            }
+            return true;
+        }
+
+        private bool IsConsistant(GraphNode node)
+        {
+            foreach(GraphArc arc in node.ConnectedArcs)
             {
                 if (!arc.IsConsistant())
                 {
@@ -182,9 +160,9 @@ namespace Sudoku_Graphic
         /// </returns>
         private bool IsComplete()
         {
-            foreach (Cell cell in cells)
+            foreach (GraphNode node in nodes)
             {
-                if (cell.Value == '.')
+                if (node.Cell.Value == '.')
                 {
                     return false;
                 }
@@ -198,7 +176,7 @@ namespace Sudoku_Graphic
         /// <returns>
         /// The <see cref="Cell"/> that satisfies the most the conditions defined in the method.
         /// </returns>
-        private Cell SelectUnassignedVariable()
+        private GraphNode SelectUnassignedVariable()
         {
             return SelectFirstUnassignedVariable();
         }
@@ -209,13 +187,13 @@ namespace Sudoku_Graphic
         /// <returns>
         /// The first <see cref="Cell"/> found that satisfies the condition; <see cref="null"/> if no matching <see cref="Cell"/> found.
         /// </returns>
-        private Cell SelectFirstUnassignedVariable()
+        private GraphNode SelectFirstUnassignedVariable()
         {
-            foreach(Cell cell in cells)
+            foreach(GraphNode node in nodes)
             {
-                if(cell.Value == '.')
+                if(node.Cell.Value == '.')
                 {
-                    return cell;
+                    return node;
                 }
             }
             return null;
@@ -228,20 +206,20 @@ namespace Sudoku_Graphic
         /// <returns>
         /// The <see cref="Cell"/> that satisfies this condition.
         /// </returns>
-        private Cell MRV()
+        private GraphNode MRV()
         {
             int minimumValueCount = int.MaxValue;
-            Cell returnedCell = null;
-            foreach(Cell cell in cells)
+            GraphNode returnedNode = null;
+            foreach(GraphNode node in nodes)
             {
-                int cellRemainingValueCount = GetRemainingPossibleValues(cell).Count;
+                int cellRemainingValueCount = GetRemainingPossibleValues(node).Count;
                 if(cellRemainingValueCount < minimumValueCount)
                 {
-                    returnedCell = cell;
+                    returnedNode = node;
                     minimumValueCount = cellRemainingValueCount;
                 }
             }
-            return returnedCell;
+            return returnedNode;
         }
 
         /// <summary>
@@ -251,20 +229,20 @@ namespace Sudoku_Graphic
         /// <returns>
         /// The <see cref="Cell"/> that satisfies this condition.
         /// </returns>
-        private Cell DegreeHeuristic()
+        private GraphNode DegreeHeuristic()
         {
             int maximumConstraintsCount = int.MinValue;
-            Cell returnedCell = null;
-            foreach (Cell cell in cells)
+            GraphNode returnedNode = null;
+            foreach (GraphNode node in nodes)
             {
-                int cellRemainingRestraintsCount = GetNumberOfConstraintsOnCell(cell);
+                int cellRemainingRestraintsCount = GetNumberOfConstraintsOnCell(node);
                 if (cellRemainingRestraintsCount > maximumConstraintsCount)
                 {
-                    returnedCell = cell;
+                    returnedNode = node;
                     maximumConstraintsCount = cellRemainingRestraintsCount;
                 }
             }
-            return returnedCell;
+            return returnedNode;
 
         }
 
@@ -276,13 +254,13 @@ namespace Sudoku_Graphic
         /// <returns>
         /// The list of <see cref="char"/> representing the lit of <see cref="Cell.value"/>.
         /// </returns>
-        private List<char> GetRemainingPossibleValues(Cell cell)
+        private List<char> GetRemainingPossibleValues(GraphNode node)
         {
-            List<char> remainingValues = new List<char>(cell.Domain);
+            List<char> remainingValues = new List<char>(node.Cell.Domain);
 
-            foreach(GraphArc arc in graphArcs)
+            foreach(GraphArc arc in node.ConnectedArcs)
             {
-                remainingValues.Remove(arc.GetOtherCellValue(cell));
+                remainingValues.Remove(arc.GetOtherCellValue(node.Cell));
             }
 
             return remainingValues;
@@ -297,12 +275,12 @@ namespace Sudoku_Graphic
         /// <see cref="GraphArc.cell1"/> or <see cref="GraphArc.cell2"/> is equal <param name="cell"> and
         /// where the other attribute's <see cref="Cell.value"/> is equal to '.'.
         /// </returns>
-        private int GetNumberOfConstraintsOnCell(Cell cell)
+        private int GetNumberOfConstraintsOnCell(GraphNode node)
         {
             int constraintsOnCell = 0;
-            foreach (GraphArc arc in graphArcs)
+            foreach (GraphArc arc in node.ConnectedArcs)
             {
-                if(arc.IsCellIn(cell) && arc.GetOtherCellValue(cell) == '.')
+                if(arc.GetOtherCellValue(node.Cell) == '.')
                 {
                     constraintsOnCell++;
                 }
@@ -317,9 +295,9 @@ namespace Sudoku_Graphic
         /// <returns>
         /// A list of char representing the ordered list of <see cref="Cell.value"/>.
         /// </returns>
-        private List<char> OrderDomainValues(Cell cell)
+        private List<char> OrderDomainValues(GraphNode node)
         {
-            return GetUnorderedCellValues(cell);
+            return GetUnorderedCellValues(node);
         }
 
         /// <summary>
@@ -329,9 +307,9 @@ namespace Sudoku_Graphic
         /// <returns>
         /// <param name="cell">'s <see cref="Cell.domain"/>.
         /// </returns>
-        private List<char> GetUnorderedCellValues(Cell cell)
+        private List<char> GetUnorderedCellValues(GraphNode node)
         {
-            return cell.Domain;
+            return node.Cell.Domain;
         }
 
         /// <summary>
@@ -343,19 +321,18 @@ namespace Sudoku_Graphic
         /// <returns>
         /// An ordered list of char representing the ordered <see cref="Cell.value"/>.
         /// </returns>
-        private List<char> LeastConstraingValue(Cell cell)
+        private List<char> LeastConstraingValue(GraphNode node)
         {
             Dictionary<char, int> remainingMinimalValues = new Dictionary<char, int>();
 
-            foreach(char c in cell.Domain)
+            foreach(char c in node.Cell.Domain)
             {
-                cell.Value = c;
+                node.Cell.Value = c;
                 int minRemainingValue = int.MaxValue;
-                foreach(Cell cell2 in cells)
-                {
-                    if(cell2.Value == '.')
+                foreach(GraphArc arc in node.ConnectedArcs) {
+                    if(arc.GetOtherCellValue(node.Cell) == '.')
                     {
-                        int cell2RemainingValues = GetRemainingPossibleValues(cell2).Count;
+                        int cell2RemainingValues = GetRemainingPossibleValues(arc.GetOtherNode(node)).Count;
                         if (cell2RemainingValues < minRemainingValue)
                         {
                             minRemainingValue = cell2RemainingValues;
@@ -364,7 +341,7 @@ namespace Sudoku_Graphic
                 }
                 remainingMinimalValues.Add(c, minRemainingValue);
             }
-            cell.Value = '.';
+            node.Cell.Value = '.';
 
             List<char> orderedValues = new List<char>();
             // Trier le dictionnaire selon la valeur décroissante

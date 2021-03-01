@@ -17,7 +17,7 @@ namespace Sudoku_Graphic
         Grid grid = new Grid();
         CSP csp = new CSP();
 
-        bool asCSP = false;
+        bool asCSP = true;
 
         public Form1()
         {
@@ -138,7 +138,8 @@ namespace Sudoku_Graphic
                     {
                         Cell cell = new Cell(actualIndex, j, dimensions.GridSizeX);
                         cell.Value = Convert.ToChar(column[j]);
-                        csp.Cells.Add(cell);
+                        GraphNode node = new GraphNode(cell);
+                        csp.Nodes.Add(node);
                     }
                 }
                 actualIndex++;
@@ -207,8 +208,9 @@ namespace Sudoku_Graphic
 
                 }
                 // Step 2 : Writing on the cells
-                foreach (Cell cell in csp.Cells)
+                foreach (GraphNode node in csp.Nodes)
                 {
+                    Cell cell = node.Cell;
                     cells[cell.PosY, cell.PosX].Text = cell.Value.ToString();
                     int squareY = cell.PosY / csp.Dimensions.SquareSizeY;
                     int squareX = cell.PosX / csp.Dimensions.SquareSizeX;
@@ -345,9 +347,6 @@ namespace Sudoku_Graphic
                 }
 
             }
-
-
-
         }
 
         private void BtnGenerate_Click(object sender, EventArgs e)

@@ -12,12 +12,12 @@ namespace Sudoku_Graphic
         /// <summary>
         /// The first <see cref="Cell"/> connected by this instance of <see cref="GraphArc"/> in a graph.
         /// </summary>
-        private Cell cell1;
+        private GraphNode node1;
 
         /// <summary>
         /// The second <see cref="Cell"/> connected by this instance of <see cref="GraphArc"/> in a graph.
         /// </summary>
-        private Cell cell2;
+        private GraphNode node2;
         #endregion
 
         #region Ctors
@@ -26,10 +26,10 @@ namespace Sudoku_Graphic
         /// </summary>
         /// <param name="cell1">The first instance of <see cref="Cell"/> connected by this <see cref="GraphArc"/></param>
         /// <param name="cell2">The second instance of <see cref="Cell"/> connected by this <see cref="GraphArc"/></param>
-        public GraphArc(Cell cell1, Cell cell2)
+        public GraphArc(GraphNode _node1, GraphNode _node2)
         {
-            this.cell1 = cell1;
-            this.cell2 = cell2;
+            this.node1 = _node1;
+            this.node2 = _node2;
         }
         #endregion
 
@@ -42,11 +42,11 @@ namespace Sudoku_Graphic
         /// </returns>
         public bool IsConsistant()
         {
-            if(cell1.Value == '.' || cell2.Value == '.')
+            if(node1.Cell.Value == '.' || node2.Cell.Value == '.')
             {
                 return true;
             }
-            return cell1.Value != cell2.Value;
+            return node1.Cell.Value != node2.Cell.Value;
         }
 
         /// <summary>
@@ -59,8 +59,7 @@ namespace Sudoku_Graphic
         /// </returns>
         public bool IsDuplicata(GraphArc arc2)
         {
-            return this.cell1 == arc2.cell1 &&
-                this.cell2 == arc2.cell2;
+            return IsCellIn(arc2.node1.Cell) && IsCellIn(arc2.node2.Cell);
         }
 
         /// <summary>
@@ -74,7 +73,7 @@ namespace Sudoku_Graphic
         /// </returns>
         public bool IsCellIn(Cell cell)
         {
-            return cell1 == cell || cell2 == cell;
+            return node1.Cell == cell || node2.Cell == cell;
         }
 
         /// <summary>
@@ -89,15 +88,28 @@ namespace Sudoku_Graphic
         /// </returns>
         public char GetOtherCellValue(Cell cell)
         {
-            if (cell == cell1)
+            if (cell == node1.Cell)
             {
-                return cell2.Value;
+                return node2.Cell.Value;
             }
-            if (cell == cell2)
+            if (cell == node2.Cell)
             {
-                return cell1.Value;
+                return node1.Cell.Value;
             }
             return ' ';
+        }
+
+        public GraphNode GetOtherNode(GraphNode node)
+        {
+            if(node1.Equals(node))
+            {
+                return node2;
+            }
+            if (node2.Equals(node))
+            {
+                return node1;
+            }
+            return null;
         }
         #endregion
 
@@ -112,8 +124,8 @@ namespace Sudoku_Graphic
         /// </returns>
         protected bool Equals(GraphArc arc2)
         {
-            return cell1.Equals(arc2.cell1) &&
-                cell2.Equals(arc2.cell2);
+            return node1.Equals(arc2.node1) &&
+                node2.Equals(arc2.node2);
         }
 
         /// <summary>
@@ -139,7 +151,7 @@ namespace Sudoku_Graphic
         /// </returns>
         public override int GetHashCode()
         {
-            return cell1.GetHashCode() + 15 * cell2.GetHashCode() ^ 2;
+            return node1.GetHashCode() + 15 * node2.GetHashCode() ^ 2;
         }
         #endregion
     }
