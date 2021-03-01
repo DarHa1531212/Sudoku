@@ -74,6 +74,13 @@ namespace Sudoku_Graphic
                 domain.Add((char)(i + 'A'));
             }
         }
+
+        public Cell(int x, int y, List<char> _domain)
+        {
+            posX = x;
+            posY = y;
+            domain = new List<char>(_domain);
+        }
         /// <summary>
         /// Initializes a new instance of the <see cref="Cell"/> class by copying
         /// another <see cref="Cell"/> instance.
