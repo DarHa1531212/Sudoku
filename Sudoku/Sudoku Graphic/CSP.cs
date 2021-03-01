@@ -8,13 +8,6 @@ namespace Sudoku_Graphic
 {
     public class CSP
     {
-        #region Constants
-        /// <summary>
-        /// The length (in number of cells) of a sudoku square
-        /// </summary>
-        int _squareSize = 3;
-        #endregion
-
         #region Attributes
         /// <summary>
         /// Contains all the <see cref="Cell"/> representing the cells of the sudoku grid.
@@ -29,6 +22,9 @@ namespace Sudoku_Graphic
         /// Contains all the <see cref="GraphArc"/> representing the binary constraints between the <see cref="Cell"/>.
         /// </summary>
         private List<GraphArc> graphArcs;
+
+        public GridDimensions Dimensions { get => dimensions; set => dimensions = value; }
+        private GridDimensions dimensions;
         #endregion
 
         #region Ctors
@@ -52,16 +48,16 @@ namespace Sudoku_Graphic
         {
             foreach(Cell cell1 in cells)
             {
-                int squareX1 = cell1.PosX / _squareSize;
-                int squareY1 = cell1.PosY / _squareSize;
+                int squareX1 = cell1.PosX / dimensions.SquareSizeX;
+                int squareY1 = cell1.PosY / dimensions.SquareSizeY;
                 foreach(Cell cell2 in cells)
                 {
                     if(cell1.Equals(cell2))
                     {
                         continue;
                     }
-                    int squareX2 = cell2.PosX / _squareSize;
-                    int squareY2 = cell2.PosY / _squareSize;
+                    int squareX2 = cell2.PosX / dimensions.SquareSizeX;
+                    int squareY2 = cell2.PosY / dimensions.SquareSizeY;
                     if (cell1.PosX == cell2.PosX || cell1.PosY == cell2.PosY ||
                         (squareX1 == squareX2 && squareY1 ==squareY2))
                     {

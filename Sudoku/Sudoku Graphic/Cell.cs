@@ -55,11 +55,20 @@ namespace Sudoku_Graphic
         /// </summary>
         /// <param name="x">The x position of the cell in the grid.</param>
         /// <param name="y">The y position of the cell in the grid.</param>
-        public Cell(int x = 0, int y = 0)
+        /// <param name="domainSize">The number of possible values of the cell.</param>
+        public Cell(int x = 0, int y = 0, int domainSize = 9)
         {
             posX = x;
             posY = y;
-            domain = new List<char>(new char[] { '1', '2', '3', '4', '5', '6', '7', '8', '9' });
+            if(domainSize > 9 || domainSize < 1)
+            {
+                throw new ArgumentException("La taille du domaine doit être comprise entre 1 et 9");
+            }
+            domain = new List<char>();
+            for(int i = 1; i <= domainSize; ++i)
+            {
+                domain.Add((char)(i + 48));
+            }
         }
         /// <summary>
         /// Initializes a new instance of the <see cref="Cell"/> class by copying

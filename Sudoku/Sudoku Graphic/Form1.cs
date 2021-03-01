@@ -11,12 +11,13 @@ using System.Windows.Forms;
 
 namespace Sudoku_Graphic
 {
+
     public partial class Form1 : Form
     {
         Grid grid = new Grid();
         CSP csp = new CSP();
 
-        bool asCSP = true;
+        bool asCSP = false;
 
         public Form1()
         {
@@ -85,12 +86,67 @@ namespace Sudoku_Graphic
 
         private void DecodeGrid(string gridContent)
         {
-            csp.ClearLists();
+            gridContent = gridContent.Replace("\r", "")
+                    .Replace(" ", "");
+
+            // Find if the grid is valid
+            GridDimensions dimensions = FindGridDimensions(gridContent);
+            if (dimensions == null)
+            {
+                return;
+            }
+
+            if (!asCSP && dimensions.GridSizeY != 9)
+            {
+                MessageBox.Show("La taille de sudoku supportée est de 9*9 uniquement avec une structure de tableau.");
+                return;
+            }
+
+            if(dimensions.GridSizeX > 9)
+            {
+                MessageBox.Show("La taille maximale supportée est de 9*9");
+                return;
+            }
+
+            if (asCSP)
+            {
+                csp.ClearLists();
+                csp.Dimensions = dimensions;
+            }
+
+            string cleanContent = gridContent.Replace("!", "")
+                .Replace(" ", "")
+                .Replace("-", "");
+            string[] columns = cleanContent.Split('\n');
             int actualIndex = 0;
-            for (int i = 0; i < 11; i++)
+            foreach (string column in columns)
+            {
+                if(column.Length == 0)
+                {
+                    continue;
+                }
+                for(int j = 0; j < column.Length; ++j)
+                {
+                    if(!asCSP)
+                    {
+                        grid.SudokuGrid[actualIndex, j].Value = Convert.ToChar(column[j]);
+                    } else
+                    {
+                        Cell cell = new Cell(actualIndex, j, dimensions.GridSizeX);
+                        cell.Value = Convert.ToChar(column[j]);
+                        csp.Cells.Add(cell);
+                    }
+                }
+                actualIndex++;
+
+            }
+
+            /*
+            for (int i = 0; i < dimensions.GridSizeX + dimensions.NumberOfSquaresOnLine() - 1; i++)
             {
                 string columnSubstring = gridContent.Substring(12 * i, 11)
                     .Replace("!", "")
+                    .Replace(" ", "")
                     .Replace("-", "");
 
                 if (columnSubstring != String.Empty)
@@ -106,6 +162,7 @@ namespace Sudoku_Graphic
                     actualIndex++;
                 }
             }
+            */
             csp.GenerateArcs();
         }
 
@@ -118,16 +175,134 @@ namespace Sudoku_Graphic
                     for (int column = 0; column < 9; column++)
                     {
                         cells[row, column].Text = grid.SudokuGrid[column, row].Value.ToString();
+                        int squareY = row / 3;
+                        int squareX = column / 3;
+
+                        if ((squareX + squareY) % 2 == 0)
+                        {
+                            cells[row, column].BackColor = Color.LightGray;
+                        }
+                        else
+                        {
+                            cells[row, column].BackColor = Color.White;
+                        }
                     }
                 }
             }
             else
             {
+                // Step 1 : Making the whole grid black
+                for(int i = 0; i < 9; ++i)
+                {
+                    for (int j = 0; j < 9; ++j)
+                    {
+                        cells[i, j].Text = " ";
+                        cells[i, j].BackColor = Color.Black;
+                    }
+
+                }
+                // Step 2 : Writing on the cells
                 foreach (Cell cell in csp.Cells)
                 {
                     cells[cell.PosY, cell.PosX].Text = cell.Value.ToString();
+                    int squareY = cell.PosY / csp.Dimensions.SquareSizeY;
+                    int squareX = cell.PosX / csp.Dimensions.SquareSizeX;
+
+                    if ((squareX + squareY)%2 == 0)
+                    {
+                        cells[cell.PosY, cell.PosX].BackColor = Color.White;
+                    } else
+                    {
+                        cells[cell.PosY, cell.PosX].BackColor = Color.LightGray;
+                    }
+                }
+            }
+        }
+
+        private GridDimensions FindGridDimensions(string gridContent)
+        {
+            string[] columns = gridContent.Split('\n');
+            int squareSizeX = -1;
+            int numberOfSquaresX = 1;
+            int squareSizeY = -1;
+            int numberOfSquaresY = 0;
+            int nonEmptyColumns = 0;
+            int numberOfLinesBeforeLimit = 0;
+            foreach (string column in columns)
+            {
+                if (column.Length == 0)
+                {
+                    continue;
+                }
+                nonEmptyColumns++;
+                string[] columnSplitInSquares = column.Split('!');
+
+                if (numberOfSquaresY == 0)
+                {
+                    numberOfSquaresY = columnSplitInSquares.Length;
+                }
+                else if (numberOfSquaresY != columnSplitInSquares.Length)
+                {
+                    MessageBox.Show("Invalid grid !");
+                    return null;
                 }
 
+                foreach (string splitColumn in columnSplitInSquares)
+                {
+                    if (squareSizeY == -1)
+                    {
+                        squareSizeY = splitColumn.Length;
+                    }
+                    else if (squareSizeY != splitColumn.Length)
+                    {
+                        MessageBox.Show("Invalid grid !");
+                        return null;
+                    }
+                }
+
+                if (column[0] == '-')
+                {
+                    numberOfSquaresX++;
+                    if (squareSizeX == -1)
+                    {
+                        squareSizeX = numberOfLinesBeforeLimit;
+                    }
+                    else if (squareSizeX != numberOfLinesBeforeLimit)
+                    {
+                        MessageBox.Show("Invalid grid !");
+                        return null;
+                    }
+                    numberOfLinesBeforeLimit = 0;
+                }
+                else
+                {
+                    numberOfLinesBeforeLimit++;
+                }
+            }
+            if (squareSizeX != numberOfLinesBeforeLimit)
+            {
+                MessageBox.Show("Invalid grid !");
+                return null;
+            }
+
+            int sizeY = numberOfSquaresY * squareSizeY;
+            int sizeX = numberOfSquaresX * squareSizeX;
+
+            Console.WriteLine("Size X : " + sizeX.ToString());
+            Console.WriteLine("Size Y : " + sizeY.ToString());
+            Console.WriteLine("Square Size X : " + squareSizeX.ToString());
+            Console.WriteLine("Square Size Y : " + squareSizeY.ToString());
+
+            GridDimensions dimensions = new GridDimensions(sizeX, sizeY, squareSizeX, squareSizeY);
+
+            if (dimensions.IsValid())
+            {
+                return dimensions;
+            }
+            else
+            {
+                MessageBox.Show("Grille Invalide");
+                return null;
             }
         }
 
