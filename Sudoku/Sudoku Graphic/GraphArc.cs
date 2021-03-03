@@ -124,8 +124,8 @@ namespace Sudoku_Graphic
         /// </returns>
         protected bool Equals(GraphArc arc2)
         {
-            return node1.Equals(arc2.node1) &&
-                node2.Equals(arc2.node2);
+            return node1.Cell.Equals(arc2.node1.Cell) &&
+                node2.Cell.Equals(arc2.node2.Cell);
         }
 
         /// <summary>

@@ -8,6 +8,13 @@ namespace Sudoku_Graphic
 {
     public class CSP
     {
+        #region Constants
+
+        const ushort _defaultSize = 9;
+        const ushort _defaultSquareSize = 3;
+
+        #endregion
+
         #region Attributes
 
         public GridDimensions Dimensions { get => dimensions; set => dimensions = value; }
@@ -24,6 +31,10 @@ namespace Sudoku_Graphic
         /// </summary>
         public CSP()
         {
+            Dimensions = new GridDimensions(
+                _defaultSize, _defaultSize, 
+                _defaultSquareSize, _defaultSquareSize
+            );
             nodes = new List<GraphNode>();
         }
         #endregion

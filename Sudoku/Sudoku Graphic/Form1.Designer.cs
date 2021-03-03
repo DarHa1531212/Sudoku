@@ -33,6 +33,7 @@
             this.Sudoku = new System.Windows.Forms.Panel();
             this.BtnResolve = new System.Windows.Forms.Button();
             this.BtnGenerate = new System.Windows.Forms.Button();
+            this.Debug = new System.Windows.Forms.Button();
             this.SuspendLayout();
             // 
             // BtnImport
@@ -79,11 +80,23 @@
             this.BtnGenerate.UseVisualStyleBackColor = true;
             this.BtnGenerate.Click += new System.EventHandler(this.BtnGenerate_Click);
             // 
+            // Debug
+            // 
+            this.Debug.Location = new System.Drawing.Point(11, 141);
+            this.Debug.Margin = new System.Windows.Forms.Padding(2);
+            this.Debug.Name = "Debug";
+            this.Debug.Size = new System.Drawing.Size(99, 39);
+            this.Debug.TabIndex = 5;
+            this.Debug.Text = "Debug";
+            this.Debug.UseVisualStyleBackColor = true;
+            this.Debug.Click += new System.EventHandler(this.Debug_Click);
+            // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(960, 549);
+            this.Controls.Add(this.Debug);
             this.Controls.Add(this.BtnGenerate);
             this.Controls.Add(this.BtnResolve);
             this.Controls.Add(this.Sudoku);
@@ -101,6 +114,7 @@
         private System.Windows.Forms.Panel Sudoku;
         private System.Windows.Forms.Button BtnResolve;
         private System.Windows.Forms.Button BtnGenerate;
+        private System.Windows.Forms.Button Debug;
     }
 }
 

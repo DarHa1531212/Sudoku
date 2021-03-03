@@ -374,5 +374,27 @@ namespace Sudoku_Graphic
         {
 
         }
+
+        private void Debug_Click(object sender, EventArgs e)
+        {
+            // Arrange
+            CSP csp2 = new CSP();
+            GraphNode gn0 = new GraphNode(new Cell(0, 0));
+            GraphNode gn1 = new GraphNode(new Cell(0, 2));
+            GraphNode gn2 = new GraphNode(new Cell(0, 6));
+            csp2.Nodes.Add(gn0);
+            csp2.Nodes.Add(gn1);
+            csp2.Nodes.Add(gn2);
+
+            GraphArc ga01 = new GraphArc(gn0, gn1);
+            GraphArc ga02 = new GraphArc(gn0, gn2);
+            GraphArc ga10 = new GraphArc(gn1, gn0);
+            GraphArc ga12 = new GraphArc(gn1, gn2);
+            GraphArc ga20 = new GraphArc(gn2, gn0);
+            GraphArc ga21 = new GraphArc(gn2, gn1);
+
+            // Act
+            csp2.GenerateArcs();
+        }
     }
 }
