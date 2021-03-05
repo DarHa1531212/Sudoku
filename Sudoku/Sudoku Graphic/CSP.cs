@@ -17,11 +17,12 @@ namespace Sudoku_Graphic
 
         #region Attributes
 
-        public GridDimensions Dimensions { get => dimensions; set => dimensions = value; }
         private GridDimensions dimensions;
-
-        public List<GraphNode> Nodes { get => nodes; set => nodes = value; }
         private List<GraphNode> nodes;
+        private List<GraphArc> graphArcs;
+        public GridDimensions Dimensions { get => dimensions; set => dimensions = value; }
+        public List<GraphNode> Nodes { get => nodes; set => nodes = value; }
+        public List<GraphArc> GraphArcs { get => graphArcs; set => graphArcs = value; }
 
         #endregion
 
@@ -36,6 +37,7 @@ namespace Sudoku_Graphic
                 _defaultSquareSize, _defaultSquareSize
             );
             nodes = new List<GraphNode>();
+            graphArcs = new List<GraphArc>();
         }
         #endregion
 
@@ -64,7 +66,9 @@ namespace Sudoku_Graphic
                     if (cell1.PosX == cell2.PosX || cell1.PosY == cell2.PosY ||
                         (squareX1 == squareX2 && squareY1 ==squareY2))
                     {
-                        node1.ConnectedArcs.Add(new GraphArc(node1, node2));
+                        GraphArc newArc = new GraphArc(node1, node2);
+                        node1.ConnectedArcs.Add(newArc);
+                        graphArcs.Add(newArc);
                     }
                 }
             }
@@ -111,6 +115,11 @@ namespace Sudoku_Graphic
             if (IsComplete()) {
                 return true;
             }
+            if (ForwardChecking())
+            {
+                return false;
+            }
+
             GraphNode chosenNode = SelectUnassignedVariable();
 
             foreach(char value in OrderDomainValues(chosenNode))
@@ -129,6 +138,67 @@ namespace Sudoku_Graphic
             return false;
         }
 
+        private bool ForwardChecking()
+        {
+            foreach (GraphNode node in nodes)
+            {
+                if (GetRemainingPossibleValues(node).Count == 0)
+                {
+                    return true;
+                }
+            }
+            return false;
+        }
+
+        private void AC3()
+        {
+            Queue<GraphArc> arcs = new Queue<GraphArc>(graphArcs);
+
+            while(arcs.Count != 0)
+            {
+                GraphArc current = arcs.Dequeue();
+                if (RemoveInconsistentValues(current))
+                {
+                    foreach (var arc in current.GetFirstNode().ConnectedArcs)
+                    {
+                        arcs.Enqueue(arc);
+                    }
+                }
+            }
+        }
+
+        private bool RemoveInconsistentValues(GraphArc arc)
+        {
+            bool removed = false;
+            Cell cell = arc.GetFirstNode().Cell;
+            foreach (var valueBeginning in cell.Domain)
+            {
+                if (ValidConstraint(arc))
+                {
+                    cell.RemoveFromDomain(valueBeginning);
+                    removed = true;
+                }
+            }
+            return removed;
+        }
+
+        private bool ValidConstraint(GraphArc arc)
+        {
+            GraphNode nodeBeginning = arc.GetFirstNode();
+            GraphNode nodeEnding = arc.GetOtherNode(nodeBeginning);
+            char valueNodeEnding = nodeBeginning.Cell.Value;
+            foreach (var valueEnding in nodeEnding.Cell.Domain)
+            {
+                nodeEnding.Cell.Value = valueEnding;
+                bool isConsistant = IsConsistant(nodeBeginning);
+                nodeEnding.Cell.Value = valueNodeEnding;
+                if (isConsistant)
+                {
+                    return true;
+                }
+            }
+            return false;
+        }
 
         /// <summary>
         /// Checks if the actual entire CSP assignment is consistent.

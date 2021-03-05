@@ -7,7 +7,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Sudoku", "Sudoku\Sudoku.csp
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Sudoku Graphic", "Sudoku Graphic\Sudoku Graphic.csproj", "{E4777397-96C1-4A71-A81F-5029EF63872F}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CSPTest", "UnitTestProject1\CSPTest.csproj", "{C2B913BA-38CA-4AFC-8B00-41EF780A3EF9}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CSPTest", "CSPTest\CSPTest.csproj", "{C2B913BA-38CA-4AFC-8B00-41EF780A3EF9}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

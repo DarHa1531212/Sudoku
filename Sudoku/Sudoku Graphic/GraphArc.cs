@@ -49,6 +49,11 @@ namespace Sudoku_Graphic
             return node1.Cell.Value != node2.Cell.Value;
         }
 
+        public GraphNode GetFirstNode()
+        {
+            return node1;
+        }
+
         /// <summary>
         /// Checks whether or not this <see cref="GraphArc"/> and another 
         /// instance of <see cref="GraphArc"/> connect the same two instances of <see cref="Cell"/>. 

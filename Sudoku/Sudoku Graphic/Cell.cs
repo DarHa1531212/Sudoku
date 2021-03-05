@@ -93,9 +93,20 @@ namespace Sudoku_Graphic
             value = cell.Value;
             domain = new List<char>(cell.Domain);
         }
+
+        #endregion
+
+        #region Public Methods
+
+        public void RemoveFromDomain(char value)
+        {
+            domain.Remove(value);
+        }
+
         #endregion
 
         #region Operators
+
         /// <summary>
         /// Tests the equality between the fields of two <see cref="Cell"/> instances.
         /// </summary>
@@ -143,6 +154,7 @@ namespace Sudoku_Graphic
             }
             return hash;
         }
+
         #endregion
     }
 }
