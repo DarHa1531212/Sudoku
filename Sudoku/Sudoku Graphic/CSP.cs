@@ -87,6 +87,7 @@ namespace Sudoku_Graphic
             {
                 return false;
             }
+            GenerateDomains();
             return RecursiveBacktracking();
         }
 
@@ -117,24 +118,34 @@ namespace Sudoku_Graphic
             }
             if (ForwardChecking())
             {
-                return false;
+               return false;
             }
 
             GraphNode chosenNode = SelectUnassignedVariable();
-
+            List<char> completeDomain = new List<char>(chosenNode.Cell.Domain); 
             foreach(char value in OrderDomainValues(chosenNode))
             {
+                List<char> oldDomain = new List<char>(chosenNode.Cell.Domain);
                 chosenNode.Cell.Value = value;
-                if (IsConsistant(chosenNode))
+                chosenNode.Cell.Domain = new List<char>(new char[] { value });
+                List<Cell> modifiedCells = ModifyNeighbouringCells(chosenNode);
+                //if (IsConsistant(chosenNode))
+                //{
+                bool success = RecursiveBacktracking();
+                if(success)
                 {
-                    bool success = RecursiveBacktracking();
-                    if(success)
-                    {
-                        return true;
-                    }
+                    return true;
+                }
+               // }
+                chosenNode.Cell.Domain = new List<char>(oldDomain);
+                chosenNode.Cell.RemoveFromDomain(value);
+                foreach(Cell cell in modifiedCells)
+                {
+                    cell.Domain.Add(value);
                 }
                 chosenNode.Cell.Value = '.';
             }
+            chosenNode.Cell.Domain = new List<char>(completeDomain);
             return false;
         }
 
@@ -142,7 +153,7 @@ namespace Sudoku_Graphic
         {
             foreach (GraphNode node in nodes)
             {
-                if (GetRemainingPossibleValues(node).Count == 0)
+                if (node.Cell.Domain.Count == 0)
                 {
                     return true;
                 }
@@ -161,7 +172,7 @@ namespace Sudoku_Graphic
                 {
                     foreach (var arc in current.GetFirstNode().ConnectedArcs)
                     {
-                        arcs.Enqueue(arc);
+                        arcs.Enqueue(arc.GetReverseArc());
                     }
                 }
             }
@@ -180,6 +191,16 @@ namespace Sudoku_Graphic
                 }
             }
             return removed;
+        }
+
+        private bool RemoveInconsistentValues_OtherImplementation(GraphArc arc)
+        {
+            Cell otherCell = arc.GetReverseArc().GetFirstNode().Cell;
+            if(cell.Domain.Count != 1)
+            {
+                return false;
+            }
+            return arc.GetFirstNode().Cell.Domain.Remove(cell.Domain[0]);
         }
 
         private bool ValidConstraint(GraphArc arc)
@@ -442,6 +463,37 @@ namespace Sudoku_Graphic
 
             return orderedValues;
         }
+
+        private void GenerateDomains()
+        {
+            foreach(GraphNode node in nodes)
+            {
+                if(node.Cell.Value != '.')
+                {
+                    node.Cell.Domain = new List<char>(new char[] { node.Cell.Value });
+                } else
+                {
+                    foreach(GraphArc arc in node.ConnectedArcs)
+                    {
+                        node.Cell.RemoveFromDomain(arc.GetOtherCellValue(node.Cell));
+                    }
+                }
+            }
+        }
+
+        private List<Cell> ModifyNeighbouringCells(GraphNode node)
+        {
+            List<Cell> cellsWithChangedDomains = new List<Cell>();
+            foreach(GraphArc arc in node.ConnectedArcs)
+            {
+                Cell neighbouringCell = arc.GetOtherNode(node).Cell;
+                if (neighbouringCell.Domain.Remove(node.Cell.Value))
+                {
+                    cellsWithChangedDomains.Add(neighbouringCell);
+                }
+            }
+            return cellsWithChangedDomains;
+        } 
         #endregion
     }
 }

@@ -120,6 +120,11 @@ namespace Sudoku_Graphic
             return null;
         }
 
+        public GraphArc GetReverseArc()
+        {
+            return new GraphArc(node2, node1);
+        }
+
         #endregion
 
         #region Operators
