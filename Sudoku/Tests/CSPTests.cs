@@ -1,12 +1,12 @@
+﻿using System;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Sudoku_Graphic;
-using System;
 using System.Collections.Generic;
 
-namespace CSPTest
+namespace Tests
 {
     [TestClass]
-    public class CSPTest
+    public class CSPTests
     {
         [TestMethod]
         public void T_CSP()
@@ -48,7 +48,7 @@ namespace CSPTest
 
             // Assert
             CollectionAssert.AreEqual(
-                gn0.ConnectedArcs, 
+                gn0.ConnectedArcs,
                 new List<GraphArc>(new GraphArc[] { ga01, ga02 })
             );
             CollectionAssert.AreEqual(
@@ -154,7 +154,7 @@ namespace CSPTest
 
             GraphArc ga01 = new GraphArc(gn0, gn1);
             GraphArc ga02 = new GraphArc(gn0, gn2);
-            gn0.ConnectedArcs = new List<GraphArc>{ ga01, ga02 };
+            gn0.ConnectedArcs = new List<GraphArc> { ga01, ga02 };
             GraphArc ga10 = new GraphArc(gn1, gn0);
             GraphArc ga12 = new GraphArc(gn1, gn2);
             gn1.ConnectedArcs = new List<GraphArc> { ga10, ga12 };
@@ -607,4 +607,3 @@ namespace CSPTest
         }
     }
 }
-

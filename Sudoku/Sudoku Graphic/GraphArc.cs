@@ -21,6 +21,7 @@ namespace Sudoku_Graphic
         #endregion
 
         #region Ctors
+
         /// <summary>
         /// Initializes a new instance of the <see cref="GraphArc"/> class.
         /// </summary>
@@ -31,9 +32,11 @@ namespace Sudoku_Graphic
             this.node1 = _node1;
             this.node2 = _node2;
         }
+
         #endregion
 
         #region Public Methods
+
         /// <summary>
         /// Checks whether the constraint represented by this instance of <see cref="GraphArc"/> is respected.
         /// </summary>
@@ -116,6 +119,7 @@ namespace Sudoku_Graphic
             }
             return null;
         }
+
         #endregion
 
         #region Operators

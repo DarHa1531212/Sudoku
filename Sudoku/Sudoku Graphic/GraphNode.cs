@@ -29,6 +29,7 @@ namespace Sudoku_Graphic
         #endregion
 
         #region Ctors
+
         /// <summary>
         /// Initializes an instance of <see cref="GraphNode"/>.
         /// </summary>
@@ -38,7 +39,10 @@ namespace Sudoku_Graphic
             cell = _cell;
             connectedArcs = new List<GraphArc>();
         }
+
         #endregion
+
+        #region Operators
 
         /// <summary>
         /// Checks whether the given <see cref="GraphNode"/> is identical to this instance.
@@ -47,10 +51,9 @@ namespace Sudoku_Graphic
         /// <returns>
         ///   <c>true</c> if both <see cref="GraphNode"/> are determined equal; otherwise <c>false</c>.
         /// </returns>
-        #region Operators
         protected bool Equals(GraphNode node2)
         {
-            return cell.Equals(cell) &&
+            return cell.Equals(node2.Cell) &&
                 connectedArcs.All(node2.ConnectedArcs.Contains);
         }
 
@@ -66,7 +69,7 @@ namespace Sudoku_Graphic
             if (ReferenceEquals(null, obj)) return false;
             if (ReferenceEquals(this, obj)) return true;
             if (obj.GetType() != this.GetType()) return false;
-            return Equals((Cell)obj);
+            return Equals((GraphNode)obj);
         }
 
         /// <summary>

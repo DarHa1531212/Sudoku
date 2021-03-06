@@ -75,7 +75,7 @@ namespace Sudoku_Graphic
         /// </returns>
         public bool IsValid()
         {
-            return gridSizeX == GridSizeY &&
+            return gridSizeX == gridSizeY &&
                 gridSizeX % squareSizeX == 0 &&
                 gridSizeY % squareSizeY == 0;
         }

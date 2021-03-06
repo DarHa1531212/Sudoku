@@ -10,14 +10,14 @@ namespace Sudoku_Graphic
     {
         #region Constants
 
-        const int gridSize = 9;
-        const int squareSize = 3;
+        const int _gridSize = 9;
+        const int _squareSize = 3;
 
         #endregion
 
         #region Attributs
 
-        private Cell[,] sudokuGrid = new Cell[gridSize, gridSize];
+        private Cell[,] sudokuGrid = new Cell[_gridSize, _gridSize];
         public Cell[,] SudokuGrid { get => sudokuGrid; set => sudokuGrid = value; }
 
         #endregion
@@ -26,9 +26,9 @@ namespace Sudoku_Graphic
 
         public Grid()
         {
-            for(int i = 0; i < gridSize; ++i)
+            for(int i = 0; i < _gridSize; ++i)
             {
-                for (int j = 0; j < gridSize; ++j)
+                for (int j = 0; j < _gridSize; ++j)
                 {
                     sudokuGrid[j, i] = new Cell(j, i);
                     sudokuGrid[j, i].Value = '.';
@@ -82,10 +82,10 @@ namespace Sudoku_Graphic
         private char[,] CellsAsChar()
         {
 
-            char[,] cellsAsValue = new char[gridSize, gridSize];
-            for (int i = 0; i < gridSize; ++i)
+            char[,] cellsAsValue = new char[_gridSize, _gridSize];
+            for (int i = 0; i < _gridSize; ++i)
             {
-                for (int j = 0; j < gridSize; ++j)
+                for (int j = 0; j < _gridSize; ++j)
                 {
                     cellsAsValue[i, j] = sudokuGrid[i, j].Value;
                 }
@@ -108,9 +108,9 @@ namespace Sudoku_Graphic
         private Tuple<int, int> SelectUnassignedVariable(Cell[,] grid)
         {
             // TODO: modifier la façon dont est selectionnée la case
-            for (int i = 0; i < gridSize; i++)
+            for (int i = 0; i < _gridSize; i++)
             {
-                for (int j = 0; j < gridSize; j++)
+                for (int j = 0; j < _gridSize; j++)
                 {
                     if (grid[j, i].Value == '.')
                     {
@@ -125,9 +125,9 @@ namespace Sudoku_Graphic
         {
             int minRemainingValues = int.MaxValue;
             Tuple<int, int> chosenVar = new Tuple<int, int>(-1, -1);
-            for (int i = 0; i < gridSize; i++)
+            for (int i = 0; i < _gridSize; i++)
             {
-                for (int j = 0; j < gridSize; j++)
+                for (int j = 0; j < _gridSize; j++)
                 {
                     if (grid[j, i].Value == '.')
                     {
@@ -148,9 +148,9 @@ namespace Sudoku_Graphic
         {
             int maxRemainingConstraints = int.MinValue;
             Tuple<int, int> chosenVar = new Tuple<int, int>(-1, -1);
-            for (int i = 0; i < gridSize; i++)
+            for (int i = 0; i < _gridSize; i++)
             {
-                for (int j = 0; j < gridSize; j++)
+                for (int j = 0; j < _gridSize; j++)
                 {
                     if (grid[j, i].Value == '.')
                     {
@@ -174,18 +174,18 @@ namespace Sudoku_Graphic
             List<char> remainingValues = new List<char>(
                 new char[] { '1', '2', '3', '4', '5', '6', '7', '8', '9' });
             // First, remove all values on the same line and colum
-            for (int index = 0; index < gridSize; ++index)
+            for (int index = 0; index < _gridSize; ++index)
             {
                 remainingValues.Remove(grid[gridLocation.Item1, index].Value);
                 remainingValues.Remove(grid[index, gridLocation.Item2].Value);
             }
 
-            int squareNumberX = gridLocation.Item2 / squareSize;
-            int squareNumberY = gridLocation.Item1 / squareSize;
+            int squareNumberX = gridLocation.Item2 / _squareSize;
+            int squareNumberY = gridLocation.Item1 / _squareSize;
 
-            for (int i = 0 + squareNumberX * squareSize; i < 0 + squareNumberX * squareSize + 3; ++i)
+            for (int i = 0 + squareNumberX * _squareSize; i < 0 + squareNumberX * _squareSize + 3; ++i)
             {
-                for (int j = 0 + squareNumberY * squareSize; i < 0 + squareNumberY * squareSize + 3; ++j)
+                for (int j = 0 + squareNumberY * _squareSize; i < 0 + squareNumberY * _squareSize + 3; ++j)
                 {
                     remainingValues.Remove(grid[j, i].Value);
                 }
@@ -198,7 +198,7 @@ namespace Sudoku_Graphic
         {
             int constraintsRemaining = 0;
             // First, remove all values on the same line and colum
-            for (int index = 0; index < gridSize; ++index)
+            for (int index = 0; index < _gridSize; ++index)
             {
                 if (index != gridLocation.Item1)
                 {
@@ -216,13 +216,13 @@ namespace Sudoku_Graphic
                 }
             }
 
-            int squareNumberX = gridLocation.Item2 / squareSize;
-            int squareNumberY = gridLocation.Item1 / squareSize;
+            int squareNumberX = gridLocation.Item2 / _squareSize;
+            int squareNumberY = gridLocation.Item1 / _squareSize;
 
             // Attention à ne pas ajouter 1 pour les contraintes déjà trouvées avec les lignes/colonnes
-            for (int i = 0 + squareNumberX * squareSize; i < 0 + squareNumberX * squareSize + 3; ++i)
+            for (int i = 0 + squareNumberX * _squareSize; i < 0 + squareNumberX * _squareSize + 3; ++i)
             {
-                for (int j = 0 + squareNumberY * squareSize; i < 0 + squareNumberY * squareSize + 3; ++j)
+                for (int j = 0 + squareNumberY * _squareSize; i < 0 + squareNumberY * _squareSize + 3; ++j)
                 {
                     if (i != gridLocation.Item2 && j != gridLocation.Item1)
                     {
@@ -259,15 +259,15 @@ namespace Sudoku_Graphic
             foreach (char v in grid[position.Item2, position.Item1].Domain)
             {
                 // Etape 1 : Créer la nouvelle grille
-                Cell[,] testGrid = new Cell[gridSize, gridSize];
-                Array.Copy(grid, 0, testGrid, gridSize * gridSize - 1, gridSize * gridSize);
+                Cell[,] testGrid = new Cell[_gridSize, _gridSize];
+                Array.Copy(grid, 0, testGrid, _gridSize * _gridSize - 1, _gridSize * _gridSize);
 
                 testGrid[position.Item2, position.Item1].Value = v;
                 // Etape 2 : Itérer sur les éléments non remplis pour trouver le minimum de valeurs possibles
                 int minRemainingValues = int.MaxValue;
-                for (int i = 0; i < gridSize; ++i)
+                for (int i = 0; i < _gridSize; ++i)
                 {
-                    for (int j = 0; j < gridSize; ++j)
+                    for (int j = 0; j < _gridSize; ++j)
                     {
                         if(grid[j,i].Value == '.')
                         {
@@ -299,7 +299,7 @@ namespace Sudoku_Graphic
         private bool IsConsistent(Tuple<int, int> position, char value, Cell[,] grid)
         {
             // TODO: ajouter la vérification des contraintes
-            for (int index = 0; index < gridSize; ++index)
+            for (int index = 0; index < _gridSize; ++index)
             {
                 if (index != position.Item1)
                 {
@@ -317,14 +317,14 @@ namespace Sudoku_Graphic
                 }
             }
 
-            int squareNumberX = position.Item2 / squareSize;
-            int squareNumberY = position.Item1 / squareSize;
+            int squareNumberX = position.Item2 / _squareSize;
+            int squareNumberY = position.Item1 / _squareSize;
 
 
             // Attention à ne pas ajouter 1 pour les contraintes déjà trouvées avec les lignes/colonnes
-            for (int i = 0 + squareNumberX * squareSize; i < 0 + squareNumberX * squareSize + 3; ++i)
+            for (int i = 0 + squareNumberX * _squareSize; i < 0 + squareNumberX * _squareSize + 3; ++i)
             {
-                for (int j = 0 + squareNumberY * squareSize; j < 0 + squareNumberY * squareSize + 3; ++j)
+                for (int j = 0 + squareNumberY * _squareSize; j < 0 + squareNumberY * _squareSize + 3; ++j)
                 {
                     if (i != position.Item2 && j != position.Item1)
                     {

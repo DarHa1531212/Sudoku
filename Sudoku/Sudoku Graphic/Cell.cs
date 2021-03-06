@@ -119,6 +119,7 @@ namespace Sudoku_Graphic
             return posX == cell2.PosX &&
                 posY == cell2.PosY &&
                 value == cell2.Value &&
+                domain.Count == cell2.Domain.Count &&
                 domain.All(cell2.Domain.Contains);
         }
 
