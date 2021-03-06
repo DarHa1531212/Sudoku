@@ -15,6 +15,13 @@ namespace Sudoku_Graphic
     public partial class Form1 : Form
     {
 
+        enum State
+        {
+            INITIAL_STATE, // Can change struct, load sudoku
+            STRUCT_CHANGED, // Can load sudoku or change struct
+            SUDOKU_LOADED // Can solve sudoku, change struct
+        }
+
         List<Color> colors = new List<Color>(new Color[]{
                 Color.LightYellow,
                 Color.LightBlue,
@@ -32,9 +39,11 @@ namespace Sudoku_Graphic
         Grid grid = new Grid();
         CSP csp = new CSP();
 
-        bool asCSP = true;
+        State state;
 
-        bool irregularSudoku = true;
+        bool asCSP;
+
+        bool irregularSudoku;
 
         GridDimensions actualDimensions;
 
@@ -46,6 +55,10 @@ namespace Sudoku_Graphic
             actualDimensions = new GridDimensions(9, 9, 3, 3);
             createCells();
             Sudoku.AutoSize = true;
+
+            state = State.INITIAL_STATE;
+            asCSP = true;
+            irregularSudoku = false;
         }
 
         Label[,] cells = new Label[9, 9];
@@ -84,7 +97,7 @@ namespace Sudoku_Graphic
                     cells[i, j].TextAlign = ContentAlignment.MiddleCenter;
                     cells[i, j].ForeColor = SystemColors.ControlDarkDark;
                     cells[i, j].Location = new Point(i * 360 / size, j * 360 / size);
-                    if(zones == null)
+                    if (zones == null)
                     {
                         cells[i, j].BackColor = ((i / actualDimensions.NumberOfSquaresOnLine()) + (j / actualDimensions.NumberOfSquaresOnColumn())) % 2 == 0 ? SystemColors.Control : Color.LightGray;
                     }
@@ -92,10 +105,11 @@ namespace Sudoku_Graphic
                     {
                         int value;
                         char zoneChar = zones[i][j];
-                        if(zoneChar >= 'A')
+                        if (zoneChar >= 'A')
                         {
                             value = 9 + zoneChar - 'A';
-                        } else
+                        }
+                        else
                         {
                             value = zoneChar - '1';
                         }
@@ -136,12 +150,15 @@ namespace Sudoku_Graphic
                     {
                         if (DecodeGrid_Regular(fileContent))
                         {
+                            state = State.SUDOKU_LOADED;
                             UpdateGridDisplay_Regular();
                         }
-                    } else
+                    }
+                    else
                     {
                         if (DecodeGrid_Irregular(fileContent))
                         {
+                            state = State.SUDOKU_LOADED;
                             UpdateGridDisplay_Irregular();
                         }
 
@@ -210,12 +227,22 @@ namespace Sudoku_Graphic
 
         private bool DecodeGrid_Irregular(string gridContent)
         {
+            if (!asCSP)
+            {
+                MessageBox.Show("Les sudokus irréguliers ne sont solvables qu'avec un CSP.");
+                return false;
+            }
             gridContent = gridContent.Replace("\r", "")
                     .Replace(" ", "");
             // Find size of grid
             GridDimensions dimensions = FindGridDimensions_Irregular(gridContent);
-            if(dimensions == null)
+            if (dimensions == null)
             {
+                return false;
+            }
+            if (dimensions.GridSizeX > 12)
+            {
+                MessageBox.Show("Les sudokus irréguliers sont pour le moment limités à une taille de 12x12.");
                 return false;
             }
 
@@ -227,6 +254,7 @@ namespace Sudoku_Graphic
             }
 
             actualDimensions = dimensions;
+            csp.ClearLists();
             recreateCells();
 
             string cleanContent = gridContent.Replace("!", "")
@@ -234,7 +262,7 @@ namespace Sudoku_Graphic
                 .Replace("-", "");
             string[] columns = cleanContent.Split('\n');
 
-            for(int i = 0; i < dimensions.GridSizeX; ++i)
+            for (int i = 0; i < dimensions.GridSizeX; ++i)
             {
                 for (int j = 0; j < dimensions.GridSizeX; ++j)
                 {
@@ -419,16 +447,17 @@ namespace Sudoku_Graphic
             // An irregular grid is just characters.
             int possibleSize = 0;
             int index = 0;
-            foreach(string column in columns)
+            foreach (string column in columns)
             {
                 if (column.Length == 0)
                 {
                     break;
                 }
-                if(possibleSize == 0)
+                if (possibleSize == 0)
                 {
                     possibleSize = column.Length;
-                } else if(possibleSize != column.Length) // Not a square
+                }
+                else if (possibleSize != column.Length) // Not a square
                 {
                     MessageBox.Show("Invalid grid !");
                     return null;
@@ -436,7 +465,7 @@ namespace Sudoku_Graphic
                 index++;
             }
 
-            if(index != possibleSize) // Not a square
+            if (index != possibleSize) // Not a square
             {
                 MessageBox.Show("Invalid grid !");
                 return null;
@@ -467,14 +496,15 @@ namespace Sudoku_Graphic
                 }
 
                 int count;
-                for(int j = 0; j < gridSize; ++j)
+                for (int j = 0; j < gridSize; ++j)
                 {
                     char number = columns[index][j];
                     characterCount.TryGetValue(number, out count);
-                    if(count == 0)
+                    if (count == 0)
                     {
                         characterCount.Add(number, 1);
-                    } else
+                    }
+                    else
                     {
                         characterCount[number] = ++count;
                     }
@@ -492,7 +522,7 @@ namespace Sudoku_Graphic
                 return null;
             }
 
-            foreach(char key in characterCount.Keys)
+            foreach (char key in characterCount.Keys)
             {
                 if (characterCount[key] != gridSize)
                 {
@@ -509,6 +539,16 @@ namespace Sudoku_Graphic
 
         private void BtnResolve_Click(object sender, EventArgs e)
         {
+            if (state == State.STRUCT_CHANGED)
+            {
+                MessageBox.Show("Structure changée. Rechargez un sudoku !");
+                return;
+            }
+            if (state == State.INITIAL_STATE)
+            {
+                MessageBox.Show("Chargez d'abord un sudoku !");
+                return;
+            }
             if (!asCSP)
             {
                 if (cells[0, 0].Text != String.Empty)
@@ -532,10 +572,11 @@ namespace Sudoku_Graphic
                 {
                     if (csp.BacktrackingSearch())
                     {
-                        if(!irregularSudoku)
+                        if (!irregularSudoku)
                         {
                             UpdateGridDisplay_Regular();
-                        } else
+                        }
+                        else
                         {
                             UpdateGridDisplay_Irregular();
                         }
@@ -579,6 +620,38 @@ namespace Sudoku_Graphic
         private void Sudoku_Paint(object sender, PaintEventArgs e)
         {
 
+        }
+
+        private void BtnChngStruct_Click(object sender, EventArgs e)
+        {
+            asCSP = !asCSP;
+            state = State.STRUCT_CHANGED;
+            csp.ClearLists();
+            if (asCSP)
+            {
+                MessageBox.Show("Structre utilisée : CSP");
+            }
+            else
+            {
+                MessageBox.Show("Structre utilisée : Tableau");
+            }
+
+        }
+
+        private void BtnChngRegular_Click(object sender, EventArgs e)
+        {
+            irregularSudoku = !irregularSudoku;
+            state = State.STRUCT_CHANGED;
+            csp.ClearLists();
+
+            if (irregularSudoku)
+            {
+                MessageBox.Show("Type de sudoku : irrégulier");
+            }
+            else
+            {
+                MessageBox.Show("Type de sudoku : régulier");
+            }
         }
     }
 }

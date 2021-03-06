@@ -34,6 +34,8 @@
             this.BtnResolve = new System.Windows.Forms.Button();
             this.BtnGenerate = new System.Windows.Forms.Button();
             this.Debug = new System.Windows.Forms.Button();
+            this.BtnChngStruct = new System.Windows.Forms.Button();
+            this.BtnChngRegular = new System.Windows.Forms.Button();
             this.SuspendLayout();
             // 
             // BtnImport
@@ -54,7 +56,7 @@
             // Sudoku
             // 
             this.Sudoku.Location = new System.Drawing.Point(153, 15);
-            this.Sudoku.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.Sudoku.Margin = new System.Windows.Forms.Padding(4);
             this.Sudoku.Name = "Sudoku";
             this.Sudoku.Size = new System.Drawing.Size(483, 409);
             this.Sudoku.TabIndex = 2;
@@ -93,11 +95,35 @@
             this.Debug.UseVisualStyleBackColor = true;
             this.Debug.Click += new System.EventHandler(this.Debug_Click);
             // 
+            // BtnChngStruct
+            // 
+            this.BtnChngStruct.Location = new System.Drawing.Point(15, 226);
+            this.BtnChngStruct.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
+            this.BtnChngStruct.Name = "BtnChngStruct";
+            this.BtnChngStruct.Size = new System.Drawing.Size(132, 48);
+            this.BtnChngStruct.TabIndex = 6;
+            this.BtnChngStruct.Text = "Changer la structure";
+            this.BtnChngStruct.UseVisualStyleBackColor = true;
+            this.BtnChngStruct.Click += new System.EventHandler(this.BtnChngStruct_Click);
+            // 
+            // BtnChngRegular
+            // 
+            this.BtnChngRegular.Location = new System.Drawing.Point(15, 278);
+            this.BtnChngRegular.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
+            this.BtnChngRegular.Name = "BtnChngRegular";
+            this.BtnChngRegular.Size = new System.Drawing.Size(132, 48);
+            this.BtnChngRegular.TabIndex = 7;
+            this.BtnChngRegular.Text = "Irrégulier / Régulier";
+            this.BtnChngRegular.UseVisualStyleBackColor = true;
+            this.BtnChngRegular.Click += new System.EventHandler(this.BtnChngRegular_Click);
+            // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(1280, 676);
+            this.Controls.Add(this.BtnChngRegular);
+            this.Controls.Add(this.BtnChngStruct);
             this.Controls.Add(this.Debug);
             this.Controls.Add(this.BtnGenerate);
             this.Controls.Add(this.BtnResolve);
@@ -117,6 +143,8 @@
         private System.Windows.Forms.Button BtnResolve;
         private System.Windows.Forms.Button BtnGenerate;
         private System.Windows.Forms.Button Debug;
+        private System.Windows.Forms.Button BtnChngStruct;
+        private System.Windows.Forms.Button BtnChngRegular;
     }
 }
 
