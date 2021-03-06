@@ -34,7 +34,12 @@ namespace Sudoku_Graphic
                 Color.Orange,
                 Color.LightGray,
                 Color.LightGreen,
-                Color.Maroon });
+                Color.Maroon,
+                Color.Cyan,
+                Color.ForestGreen,
+                Color.MistyRose,
+                Color.PaleTurquoise
+        });
 
         Grid grid = new Grid();
         CSP csp = new CSP();
@@ -240,9 +245,13 @@ namespace Sudoku_Graphic
             {
                 return false;
             }
-            if (dimensions.GridSizeX > 12)
+            if (dimensions.GridSizeX > colors.Count)
             {
-                MessageBox.Show("Les sudokus irréguliers sont pour le moment limités à une taille de 12x12.");
+                MessageBox.Show("Les sudokus irréguliers sont pour le moment limités à une taille de " 
+                    + colors.Count.ToString() 
+                    + "x" 
+                    + colors.Count.ToString()
+                    + ".");
                 return false;
             }
 
