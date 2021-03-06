@@ -14,10 +14,27 @@ namespace Sudoku_Graphic
 
     public partial class Form1 : Form
     {
+
+        List<Color> colors = new List<Color>(new Color[]{
+                Color.LightYellow,
+                Color.LightBlue,
+                Color.Pink,
+                Color.LightCyan,
+                Color.Lime,
+                Color.Red,
+                Color.Blue,
+                Color.Magenta,
+                Color.Orange,
+                Color.LightGray,
+                Color.LightGreen,
+                Color.Maroon });
+
         Grid grid = new Grid();
         CSP csp = new CSP();
 
         bool asCSP = true;
+
+        bool irregularSudoku = true;
 
         GridDimensions actualDimensions;
 
@@ -33,10 +50,10 @@ namespace Sudoku_Graphic
 
         Label[,] cells = new Label[9, 9];
 
-        private void recreateCells()
+        private void recreateCells(string[] zones = null)
         {
             disposeOfCells();
-            createCells();
+            createCells(zones);
         }
 
         private void disposeOfCells()
@@ -50,7 +67,7 @@ namespace Sudoku_Graphic
             }
         }
 
-        private void createCells()
+        private void createCells(string[] zones = null)
         {
             int size = actualDimensions.GridSizeX;
             cells = new Label[size, size];
@@ -60,14 +77,30 @@ namespace Sudoku_Graphic
                 for (int j = 0; j < size; j++)
                 {
                     cells[i, j] = new Label();
-                    cells[i, j].Font = new Font(SystemFonts.DefaultFont.FontFamily, 140/size);
-                    cells[i, j].Font = new Font(SystemFonts.DefaultFont.FontFamily, 120 /size);
-                    cells[i, j].Size = new Size(360/size, 360 / size);
+                    cells[i, j].Font = new Font(SystemFonts.DefaultFont.FontFamily, 180 / size);
+                    //cells[i, j].Font = new Font(SystemFonts.DefaultFont.FontFamily, 180 / size);
+                    cells[i, j].Size = new Size(360 / size, 360 / size);
                     cells[i, j].BorderStyle = BorderStyle.Fixed3D;
                     cells[i, j].TextAlign = ContentAlignment.MiddleCenter;
                     cells[i, j].ForeColor = SystemColors.ControlDarkDark;
-                    cells[i, j].Location = new Point(i * 360/size, j * 360 / size);
-                    cells[i, j].BackColor = ((i / actualDimensions.NumberOfSquaresOnLine()) + (j / actualDimensions.NumberOfSquaresOnColumn())) % 2 == 0 ? SystemColors.Control : Color.LightGray;
+                    cells[i, j].Location = new Point(i * 360 / size, j * 360 / size);
+                    if(zones == null)
+                    {
+                        cells[i, j].BackColor = ((i / actualDimensions.NumberOfSquaresOnLine()) + (j / actualDimensions.NumberOfSquaresOnColumn())) % 2 == 0 ? SystemColors.Control : Color.LightGray;
+                    }
+                    else
+                    {
+                        int value;
+                        char zoneChar = zones[i][j];
+                        if(zoneChar >= 'A')
+                        {
+                            value = 9 + zoneChar - 'A';
+                        } else
+                        {
+                            value = zoneChar - '1';
+                        }
+                        cells[i, j].BackColor = colors[value];
+                    }
 
                     Sudoku.Controls.Add(cells[i, j]);
                 }
@@ -99,24 +132,30 @@ namespace Sudoku_Graphic
                     {
                         fileContent = reader.ReadToEnd();
                     }
-
-                    if (DecodeGrid(fileContent))
+                    if (!irregularSudoku)
                     {
-
-                        UpdateGridDisplay();
+                        if (DecodeGrid_Regular(fileContent))
+                        {
+                            UpdateGridDisplay_Regular();
+                        }
+                    } else
+                    {
+                        if (DecodeGrid_Irregular(fileContent))
+                        {
+                            UpdateGridDisplay_Irregular();
+                        }
 
                     }
                 }
             }
         }
 
-        private bool DecodeGrid(string gridContent)
+        private bool DecodeGrid_Regular(string gridContent)
         {
             gridContent = gridContent.Replace("\r", "")
                     .Replace(" ", "");
-
             // Find if the grid is valid
-            GridDimensions dimensions = FindGridDimensions(gridContent);
+            GridDimensions dimensions = FindGridDimensions_Regular(gridContent);
             if (dimensions == null)
             {
                 return false;
@@ -157,6 +196,7 @@ namespace Sudoku_Graphic
                     {
                         Cell cell = new Cell(actualIndex, j, dimensions.GridSizeX);
                         cell.Value = Convert.ToChar(column[j]);
+                        cell.ZoneNumber = dimensions.NumberOfSquaresOnLine() * (actualIndex / dimensions.SquareSizeX) + j / dimensions.SquareSizeY;
                         GraphNode node = new GraphNode(cell);
                         csp.Nodes.Add(node);
                     }
@@ -164,34 +204,62 @@ namespace Sudoku_Graphic
                 actualIndex++;
 
             }
-
-            /*
-            for (int i = 0; i < dimensions.GridSizeX + dimensions.NumberOfSquaresOnLine() - 1; i++)
-            {
-                string columnSubstring = gridContent.Substring(12 * i, 11)
-                    .Replace("!", "")
-                    .Replace(" ", "")
-                    .Replace("-", "");
-
-                if (columnSubstring != String.Empty)
-                {
-                    for (int j = 0; j < 9; j++)
-                    {
-                        grid.SudokuGrid[actualIndex, j].Value = Convert.ToChar(columnSubstring.Substring(j, 1));
-
-                        Cell cell = new Cell(actualIndex, j);
-                        cell.Value = Convert.ToChar(columnSubstring.Substring(j, 1));
-                        csp.Cells.Add(cell);
-                    }
-                    actualIndex++;
-                }
-            }
-            */
             csp.GenerateArcs();
             return true;
         }
 
-        private void UpdateGridDisplay()
+        private bool DecodeGrid_Irregular(string gridContent)
+        {
+            gridContent = gridContent.Replace("\r", "")
+                    .Replace(" ", "");
+            // Find size of grid
+            GridDimensions dimensions = FindGridDimensions_Irregular(gridContent);
+            if(dimensions == null)
+            {
+                return false;
+            }
+
+            // Recuperate zones
+            string[] zones = GetZones(gridContent, dimensions.GridSizeX);
+            if (zones == null)
+            {
+                return false;
+            }
+
+            actualDimensions = dimensions;
+            recreateCells();
+
+            string cleanContent = gridContent.Replace("!", "")
+                .Replace(" ", "")
+                .Replace("-", "");
+            string[] columns = cleanContent.Split('\n');
+
+            for(int i = 0; i < dimensions.GridSizeX; ++i)
+            {
+                for (int j = 0; j < dimensions.GridSizeX; ++j)
+                {
+                    Cell cell = new Cell(i, j, dimensions.GridSizeX);
+                    cell.Value = Convert.ToChar(columns[i][j]);
+                    int value;
+                    char zoneChar = zones[i][j];
+                    if (zoneChar >= 'A')
+                    {
+                        value = 9 + zoneChar - 'A';
+                    }
+                    else
+                    {
+                        value = zoneChar - '1';
+                    }
+                    cell.ZoneNumber = value;
+                    GraphNode node = new GraphNode(cell);
+                    csp.Nodes.Add(node);
+                }
+            }
+            csp.GenerateArcs();
+            return true;
+        }
+
+        private void UpdateGridDisplay_Regular()
         {
             if (!asCSP)
             {
@@ -216,34 +284,22 @@ namespace Sudoku_Graphic
             }
             else
             {
-                // Step 1 : Making the whole grid black
-                /*
-                for (int i = 0; i < actualDimensions.GridSizeX; ++i)
-                {
-                    for (int j = 0; j < actualDimensions.GridSizeX; ++j)
-                    {
-                        cells[i, j].Text = " ";
-                        cells[i, j].BackColor = Color.Black;
-                    }
-
-                }
-                */
-                // Step 2 : Writing on the cells
                 foreach (GraphNode node in csp.Nodes)
                 {
                     Cell cell = node.Cell;
-                    string value;
-                    if(cell.Value >= 'A')
-                    {
-                        int realInteger = 10 + cell.Value - 'A';
-                        Console.WriteLine(realInteger);
-                        value = realInteger.ToString();
-                        Console.WriteLine(value);
-                    } else
-                    {
-                        value = cell.Value.ToString();
-                    }
-                    cells[cell.PosY, cell.PosX].Text = value;
+                    //string value;
+                    //if (cell.Value >= 'A')
+                    //{
+                    //    int realInteger = 10 + cell.Value - 'A';
+                    //    Console.WriteLine(realInteger);
+                    //    value = realInteger.ToString();
+                    //    Console.WriteLine(value);
+                    //}
+                    //else
+                    //{
+                    //    value = cell.Value.ToString();
+                    //}
+                    cells[cell.PosY, cell.PosX].Text = cell.Value.ToString();
                     int squareY = cell.PosY / csp.Dimensions.SquareSizeY;
                     int squareX = cell.PosX / csp.Dimensions.SquareSizeX;
 
@@ -259,7 +315,17 @@ namespace Sudoku_Graphic
             }
         }
 
-        private GridDimensions FindGridDimensions(string gridContent)
+        private void UpdateGridDisplay_Irregular()
+        {
+            foreach (GraphNode node in csp.Nodes)
+            {
+                Cell cell = node.Cell;
+                cells[cell.PosY, cell.PosX].Text = cell.Value.ToString();
+                cells[cell.PosY, cell.PosX].BackColor = colors[cell.ZoneNumber];
+            }
+        }
+
+        private GridDimensions FindGridDimensions_Regular(string gridContent)
         {
             string[] columns = gridContent.Split('\n');
             int squareSizeX = -1;
@@ -346,6 +412,101 @@ namespace Sudoku_Graphic
             }
         }
 
+        private GridDimensions FindGridDimensions_Irregular(string gridContent)
+        {
+            string[] columns = gridContent.Split('\n');
+            // We need to know the size m*m of the grid. We're gonna ask for the grid to be simple (no ! or -)
+            // An irregular grid is just characters.
+            int possibleSize = 0;
+            int index = 0;
+            foreach(string column in columns)
+            {
+                if (column.Length == 0)
+                {
+                    break;
+                }
+                if(possibleSize == 0)
+                {
+                    possibleSize = column.Length;
+                } else if(possibleSize != column.Length) // Not a square
+                {
+                    MessageBox.Show("Invalid grid !");
+                    return null;
+                }
+                index++;
+            }
+
+            if(index != possibleSize) // Not a square
+            {
+                MessageBox.Show("Invalid grid !");
+                return null;
+            }
+
+            return new GridDimensions(index, index, -1, -1);
+        }
+
+
+
+        private string[] GetZones(string gridContent, int gridSize)
+        {
+            string[] columns = gridContent.Split('\n');
+            // First we don't need the grid we want to find the empty cell
+
+            Dictionary<char, int> characterCount = new Dictionary<char, int>();
+            int parsedColumns = 0;
+            for (int index = gridSize + 1; index < columns.Length; ++index)
+            {
+                if (columns[index].Length == 0)
+                {
+                    break;
+                }
+                else if (gridSize != columns[index].Length) // Not a square
+                {
+                    MessageBox.Show("Invalid grid 1 !");
+                    return null;
+                }
+
+                int count;
+                for(int j = 0; j < gridSize; ++j)
+                {
+                    char number = columns[index][j];
+                    characterCount.TryGetValue(number, out count);
+                    if(count == 0)
+                    {
+                        characterCount.Add(number, 1);
+                    } else
+                    {
+                        characterCount[number] = ++count;
+                    }
+                }
+                parsedColumns++;
+            }
+            if (parsedColumns != gridSize)
+            {
+                MessageBox.Show("Invalid grid 2 !");
+                return null;
+            }
+            if (characterCount.Count != gridSize)
+            {
+                MessageBox.Show("Invalid grid 3 !");
+                return null;
+            }
+
+            foreach(char key in characterCount.Keys)
+            {
+                if (characterCount[key] != gridSize)
+                {
+                    MessageBox.Show("Invalid grid 4 !");
+                    return null;
+                }
+            }
+
+            string[] zones = new string[gridSize];
+            Array.Copy(columns, gridSize + 1, zones, 0, gridSize);
+            return zones;
+        }
+
+
         private void BtnResolve_Click(object sender, EventArgs e)
         {
             if (!asCSP)
@@ -353,13 +514,14 @@ namespace Sudoku_Graphic
                 if (cells[0, 0].Text != String.Empty)
                 {
                     Cell[,] solvedSudoku = grid.BacktrackingSearch();
-                    if(solvedSudoku == null)
+                    if (solvedSudoku == null)
                     {
                         MessageBox.Show("Backtracking failed.");
-                    } else
+                    }
+                    else
                     {
                         grid.SudokuGrid = solvedSudoku;
-                        UpdateGridDisplay();
+                        UpdateGridDisplay_Regular();
                     }
                 }
 
@@ -370,7 +532,13 @@ namespace Sudoku_Graphic
                 {
                     if (csp.BacktrackingSearch())
                     {
-                        UpdateGridDisplay();
+                        if(!irregularSudoku)
+                        {
+                            UpdateGridDisplay_Regular();
+                        } else
+                        {
+                            UpdateGridDisplay_Irregular();
+                        }
                     }
                     else
                     {

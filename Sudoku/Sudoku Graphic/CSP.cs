@@ -52,8 +52,8 @@ namespace Sudoku_Graphic
             foreach (GraphNode node1 in nodes)
             {
                 Cell cell1 = node1.Cell;
-                int squareX1 = cell1.PosX / dimensions.SquareSizeX;
-                int squareY1 = cell1.PosY / dimensions.SquareSizeY;
+                //int squareX1 = cell1.PosX / dimensions.SquareSizeX;
+                //int squareY1 = cell1.PosY / dimensions.SquareSizeY;
                 foreach (GraphNode node2 in nodes)
                 {
                     Cell cell2 = node2.Cell;
@@ -61,10 +61,10 @@ namespace Sudoku_Graphic
                     {
                         continue;
                     }
-                    int squareX2 = cell2.PosX / dimensions.SquareSizeX;
-                    int squareY2 = cell2.PosY / dimensions.SquareSizeY;
+                    //int squareX2 = cell2.PosX / dimensions.SquareSizeX;
+                    //int squareY2 = cell2.PosY / dimensions.SquareSizeY;
                     if (cell1.PosX == cell2.PosX || cell1.PosY == cell2.PosY ||
-                        (squareX1 == squareX2 && squareY1 == squareY2))
+                        (cell1.ZoneNumber == cell2.ZoneNumber))
                     {
                         GraphArc newArc = new GraphArc(node1, node2);
                         node1.ConnectedArcs.Add(newArc);

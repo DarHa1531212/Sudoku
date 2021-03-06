@@ -46,6 +46,10 @@ namespace Sudoku_Graphic
         /// Gets and sets <see cref="Cell.domain"/>.
         /// </summary>
         public List<char> Domain { get => domain; set => domain = value; }
+
+        private int zoneNumber;
+        public int ZoneNumber { get => zoneNumber; set => zoneNumber = value; }
+
         #endregion
 
         #region Ctors
@@ -119,6 +123,7 @@ namespace Sudoku_Graphic
             return posX == cell2.PosX &&
                 posY == cell2.PosY &&
                 value == cell2.Value &&
+                zoneNumber == cell2.ZoneNumber &&
                 domain.Count == cell2.Domain.Count &&
                 domain.All(cell2.Domain.Contains);
         }
@@ -147,8 +152,8 @@ namespace Sudoku_Graphic
         public override int GetHashCode()
         {
             int hash = posX.GetHashCode() ^ 5 +
-                8 * posY.GetHashCode() ^ 17;
-                //6*value.GetHashCode()^5;
+                8 * posY.GetHashCode() ^ 17 +
+                6*zoneNumber.GetHashCode()^5;
             //foreach (char c in domain)
             //{
             //    hash += c.GetHashCode() ^ 9;
