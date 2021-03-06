@@ -146,13 +146,13 @@ namespace Sudoku_Graphic
         /// </returns>
         public override int GetHashCode()
         {
-            int hash = posX.GetHashCode()^5 +
-                8*posY.GetHashCode()^17 +
-                6*value.GetHashCode()^5;
-            foreach (char c in domain)
-            {
-                hash += c.GetHashCode() ^ 9;
-            }
+            int hash = posX.GetHashCode() ^ 5 +
+                8 * posY.GetHashCode() ^ 17;
+                //6*value.GetHashCode()^5;
+            //foreach (char c in domain)
+            //{
+            //    hash += c.GetHashCode() ^ 9;
+            //}
             return hash;
         }
 

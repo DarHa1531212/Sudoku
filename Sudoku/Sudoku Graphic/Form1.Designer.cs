@@ -38,10 +38,10 @@
             // 
             // BtnImport
             // 
-            this.BtnImport.Location = new System.Drawing.Point(11, 12);
-            this.BtnImport.Margin = new System.Windows.Forms.Padding(2);
+            this.BtnImport.Location = new System.Drawing.Point(15, 15);
+            this.BtnImport.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
             this.BtnImport.Name = "BtnImport";
-            this.BtnImport.Size = new System.Drawing.Size(99, 39);
+            this.BtnImport.Size = new System.Drawing.Size(132, 48);
             this.BtnImport.TabIndex = 1;
             this.BtnImport.Text = "Importer un plateau (.ss)";
             this.BtnImport.UseVisualStyleBackColor = true;
@@ -53,17 +53,19 @@
             // 
             // Sudoku
             // 
-            this.Sudoku.Location = new System.Drawing.Point(115, 12);
+            this.Sudoku.Location = new System.Drawing.Point(153, 15);
+            this.Sudoku.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
             this.Sudoku.Name = "Sudoku";
-            this.Sudoku.Size = new System.Drawing.Size(362, 332);
+            this.Sudoku.Size = new System.Drawing.Size(483, 409);
             this.Sudoku.TabIndex = 2;
+            this.Sudoku.Paint += new System.Windows.Forms.PaintEventHandler(this.Sudoku_Paint);
             // 
             // BtnResolve
             // 
-            this.BtnResolve.Location = new System.Drawing.Point(11, 55);
-            this.BtnResolve.Margin = new System.Windows.Forms.Padding(2);
+            this.BtnResolve.Location = new System.Drawing.Point(15, 68);
+            this.BtnResolve.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
             this.BtnResolve.Name = "BtnResolve";
-            this.BtnResolve.Size = new System.Drawing.Size(99, 39);
+            this.BtnResolve.Size = new System.Drawing.Size(132, 48);
             this.BtnResolve.TabIndex = 3;
             this.BtnResolve.Text = "Résoudre le sudoku";
             this.BtnResolve.UseVisualStyleBackColor = true;
@@ -71,10 +73,10 @@
             // 
             // BtnGenerate
             // 
-            this.BtnGenerate.Location = new System.Drawing.Point(11, 98);
-            this.BtnGenerate.Margin = new System.Windows.Forms.Padding(2);
+            this.BtnGenerate.Location = new System.Drawing.Point(15, 121);
+            this.BtnGenerate.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
             this.BtnGenerate.Name = "BtnGenerate";
-            this.BtnGenerate.Size = new System.Drawing.Size(99, 39);
+            this.BtnGenerate.Size = new System.Drawing.Size(132, 48);
             this.BtnGenerate.TabIndex = 4;
             this.BtnGenerate.Text = "Générer un plateau";
             this.BtnGenerate.UseVisualStyleBackColor = true;
@@ -82,10 +84,10 @@
             // 
             // Debug
             // 
-            this.Debug.Location = new System.Drawing.Point(11, 141);
-            this.Debug.Margin = new System.Windows.Forms.Padding(2);
+            this.Debug.Location = new System.Drawing.Point(15, 174);
+            this.Debug.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
             this.Debug.Name = "Debug";
-            this.Debug.Size = new System.Drawing.Size(99, 39);
+            this.Debug.Size = new System.Drawing.Size(132, 48);
             this.Debug.TabIndex = 5;
             this.Debug.Text = "Debug";
             this.Debug.UseVisualStyleBackColor = true;
@@ -93,15 +95,15 @@
             // 
             // Form1
             // 
-            this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
+            this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(960, 549);
+            this.ClientSize = new System.Drawing.Size(1280, 676);
             this.Controls.Add(this.Debug);
             this.Controls.Add(this.BtnGenerate);
             this.Controls.Add(this.BtnResolve);
             this.Controls.Add(this.Sudoku);
             this.Controls.Add(this.BtnImport);
-            this.Margin = new System.Windows.Forms.Padding(2);
+            this.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
             this.Name = "Form1";
             this.Text = "Form1";
             this.ResumeLayout(false);

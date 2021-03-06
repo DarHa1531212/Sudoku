@@ -60,8 +60,8 @@ namespace Sudoku_Graphic
                 for (int j = 0; j < size; j++)
                 {
                     cells[i, j] = new Label();
-                    cells[i, j].Font = new Font(SystemFonts.DefaultFont.FontFamily, 180/size);
-                    cells[i, j].Font = new Font(SystemFonts.DefaultFont.FontFamily, 180 / size);
+                    cells[i, j].Font = new Font(SystemFonts.DefaultFont.FontFamily, 140/size);
+                    cells[i, j].Font = new Font(SystemFonts.DefaultFont.FontFamily, 120 /size);
                     cells[i, j].Size = new Size(360/size, 360 / size);
                     cells[i, j].BorderStyle = BorderStyle.Fixed3D;
                     cells[i, j].TextAlign = ContentAlignment.MiddleCenter;
@@ -232,7 +232,18 @@ namespace Sudoku_Graphic
                 foreach (GraphNode node in csp.Nodes)
                 {
                     Cell cell = node.Cell;
-                    cells[cell.PosY, cell.PosX].Text = cell.Value.ToString();
+                    string value;
+                    if(cell.Value >= 'A')
+                    {
+                        int realInteger = 10 + cell.Value - 'A';
+                        Console.WriteLine(realInteger);
+                        value = realInteger.ToString();
+                        Console.WriteLine(value);
+                    } else
+                    {
+                        value = cell.Value.ToString();
+                    }
+                    cells[cell.PosY, cell.PosX].Text = value;
                     int squareY = cell.PosY / csp.Dimensions.SquareSizeY;
                     int squareX = cell.PosX / csp.Dimensions.SquareSizeX;
 
@@ -395,6 +406,11 @@ namespace Sudoku_Graphic
 
             // Act
             csp2.GenerateArcs();
+        }
+
+        private void Sudoku_Paint(object sender, PaintEventArgs e)
+        {
+
         }
     }
 }

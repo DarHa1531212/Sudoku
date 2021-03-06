@@ -33,7 +33,7 @@ namespace Sudoku_Graphic
         public CSP()
         {
             Dimensions = new GridDimensions(
-                _defaultSize, _defaultSize, 
+                _defaultSize, _defaultSize,
                 _defaultSquareSize, _defaultSquareSize
             );
             nodes = new List<GraphNode>();
@@ -49,22 +49,22 @@ namespace Sudoku_Graphic
         /// </summary>
         public void GenerateArcs()
         {
-            foreach(GraphNode node1 in nodes)
+            foreach (GraphNode node1 in nodes)
             {
                 Cell cell1 = node1.Cell;
                 int squareX1 = cell1.PosX / dimensions.SquareSizeX;
                 int squareY1 = cell1.PosY / dimensions.SquareSizeY;
-                foreach(GraphNode node2 in nodes)
+                foreach (GraphNode node2 in nodes)
                 {
                     Cell cell2 = node2.Cell;
-                    if(cell1.Equals(cell2))
+                    if (cell1.Equals(cell2))
                     {
                         continue;
                     }
                     int squareX2 = cell2.PosX / dimensions.SquareSizeX;
                     int squareY2 = cell2.PosY / dimensions.SquareSizeY;
                     if (cell1.PosX == cell2.PosX || cell1.PosY == cell2.PosY ||
-                        (squareX1 == squareX2 && squareY1 ==squareY2))
+                        (squareX1 == squareX2 && squareY1 == squareY2))
                     {
                         GraphArc newArc = new GraphArc(node1, node2);
                         node1.ConnectedArcs.Add(newArc);
@@ -83,7 +83,7 @@ namespace Sudoku_Graphic
         public bool BacktrackingSearch()
         {
             // We first check if the grid respects the rules.
-            if(!IsConsistant())
+            if (!IsConsistant())
             {
                 return false;
             }
@@ -113,36 +113,40 @@ namespace Sudoku_Graphic
         /// </returns>
         private bool RecursiveBacktracking()
         {
-            if (IsComplete()) {
+            if (IsComplete())
+            {
                 return true;
             }
             if (ForwardChecking())
             {
-               return false;
+                return false;
             }
 
             GraphNode chosenNode = SelectUnassignedVariable();
-            List<char> completeDomain = new List<char>(chosenNode.Cell.Domain); 
-            foreach(char value in OrderDomainValues(chosenNode))
+            List<char> completeDomain = new List<char>(chosenNode.Cell.Domain);
+            foreach (char value in OrderDomainValues(chosenNode))
             {
-                List<char> oldDomain = new List<char>(chosenNode.Cell.Domain);
+                Dictionary <Cell, List<char>> oldDomains = StoreOldDomains();
+
+                //List<char> oldDomain = new List<char>(chosenNode.Cell.Domain);
                 chosenNode.Cell.Value = value;
                 chosenNode.Cell.Domain = new List<char>(new char[] { value });
                 List<Cell> modifiedCells = ModifyNeighbouringCells(chosenNode);
+                AC3();
                 //if (IsConsistant(chosenNode))
                 //{
-                bool success = RecursiveBacktracking();
-                if(success)
-                {
-                    return true;
-                }
-               // }
-                chosenNode.Cell.Domain = new List<char>(oldDomain);
+                    bool success = RecursiveBacktracking();
+                    if (success)
+                    {
+                        return true;
+                    }
+                //}
+                RestoreOldDomains(oldDomains);
+                //foreach(Cell cell in modifiedCells)
+                //{
+                //    cell.Domain.Add(value);
+                //}
                 chosenNode.Cell.RemoveFromDomain(value);
-                foreach(Cell cell in modifiedCells)
-                {
-                    cell.Domain.Add(value);
-                }
                 chosenNode.Cell.Value = '.';
             }
             chosenNode.Cell.Domain = new List<char>(completeDomain);
@@ -165,10 +169,10 @@ namespace Sudoku_Graphic
         {
             Queue<GraphArc> arcs = new Queue<GraphArc>(graphArcs);
 
-            while(arcs.Count != 0)
+            while (arcs.Count != 0)
             {
                 GraphArc current = arcs.Dequeue();
-                if (RemoveInconsistentValues(current))
+                if (RemoveInconsistentValues_OtherImplementation(current))
                 {
                     foreach (var arc in current.GetFirstNode().ConnectedArcs)
                     {
@@ -196,11 +200,11 @@ namespace Sudoku_Graphic
         private bool RemoveInconsistentValues_OtherImplementation(GraphArc arc)
         {
             Cell otherCell = arc.GetReverseArc().GetFirstNode().Cell;
-            if(cell.Domain.Count != 1)
+            if (otherCell.Domain.Count != 1)
             {
                 return false;
             }
-            return arc.GetFirstNode().Cell.Domain.Remove(cell.Domain[0]);
+            return arc.GetFirstNode().Cell.Domain.Remove(otherCell.Domain[0]);
         }
 
         private bool ValidConstraint(GraphArc arc)
@@ -231,9 +235,9 @@ namespace Sudoku_Graphic
         {
             foreach (GraphNode node in nodes)
             {
-                foreach(GraphArc arc in node.ConnectedArcs)
+                foreach (GraphArc arc in node.ConnectedArcs)
                 {
-                    if(!arc.IsConsistant())
+                    if (!arc.IsConsistant())
                     {
                         return false;
                     }
@@ -252,7 +256,7 @@ namespace Sudoku_Graphic
         /// </returns>
         private bool IsConsistant(GraphNode node)
         {
-            foreach(GraphArc arc in node.ConnectedArcs)
+            foreach (GraphArc arc in node.ConnectedArcs)
             {
                 if (!arc.IsConsistant())
                 {
@@ -289,7 +293,9 @@ namespace Sudoku_Graphic
         /// </returns>
         private GraphNode SelectUnassignedVariable()
         {
-            return SelectFirstUnassignedVariable();
+            //return SelectFirstUnassignedVariable();
+            List<GraphNode> MRVnodes = MRV();
+            return DegreeHeuristicOnSomeNodes(MRVnodes);
         }
 
         /// <summary>
@@ -300,9 +306,9 @@ namespace Sudoku_Graphic
         /// </returns>
         private GraphNode SelectFirstUnassignedVariable()
         {
-            foreach(GraphNode node in nodes)
+            foreach (GraphNode node in nodes)
             {
-                if(node.Cell.Value == '.')
+                if (node.Cell.Value == '.')
                 {
                     return node;
                 }
@@ -317,20 +323,28 @@ namespace Sudoku_Graphic
         /// <returns>
         /// The <see cref="GraphNode"/> that satisfies this condition.
         /// </returns>
-        private GraphNode MRV()
+        private List<GraphNode> MRV()
         {
             int minimumValueCount = int.MaxValue;
-            GraphNode returnedNode = null;
-            foreach(GraphNode node in nodes)
+            List<GraphNode> returnedNodes = new List<GraphNode>();
+            foreach (GraphNode node in nodes)
             {
-                int cellRemainingValueCount = GetRemainingPossibleValues(node).Count;
-                if(cellRemainingValueCount < minimumValueCount)
+                if(node.Cell.Value != '.')
                 {
-                    returnedNode = node;
+                    continue;
+                }
+                int cellRemainingValueCount = GetRemainingPossibleValues(node).Count;
+                if (cellRemainingValueCount < minimumValueCount)
+                {
+                    returnedNodes = new List<GraphNode>();
+                    returnedNodes.Add(node);
                     minimumValueCount = cellRemainingValueCount;
+                } else if(cellRemainingValueCount == minimumValueCount)
+                {
+                    returnedNodes.Add(node);
                 }
             }
-            return returnedNode;
+            return returnedNodes;
         }
 
         /// <summary>
@@ -340,21 +354,44 @@ namespace Sudoku_Graphic
         /// <returns>
         /// The <see cref="GraphNode"/> that satisfies this condition.
         /// </returns>
-        private GraphNode DegreeHeuristic()
+        private List<GraphNode> DegreeHeuristic()
         {
             int maximumConstraintsCount = int.MinValue;
-            GraphNode returnedNode = null;
+            List<GraphNode> returnedNodes = new List<GraphNode>();
             foreach (GraphNode node in nodes)
+            {
+                if(node.Cell.Value != '.')
+                {
+                    continue;
+                }
+                int cellRemainingRestraintsCount = GetNumberOfConstraintsOnNode(node);
+                if (cellRemainingRestraintsCount > maximumConstraintsCount)
+                {
+                    returnedNodes = new List<GraphNode>();
+                    returnedNodes.Add(node);
+                    maximumConstraintsCount = cellRemainingRestraintsCount;
+                } else if(cellRemainingRestraintsCount == maximumConstraintsCount)
+                {
+                    returnedNodes.Add(node);
+                }
+            }
+            return returnedNodes;
+        }
+
+        private GraphNode DegreeHeuristicOnSomeNodes(List<GraphNode> input)
+        {
+            GraphNode output = null;
+            int maximumConstraintsCount = int.MinValue;
+            foreach (GraphNode node in input)
             {
                 int cellRemainingRestraintsCount = GetNumberOfConstraintsOnNode(node);
                 if (cellRemainingRestraintsCount > maximumConstraintsCount)
                 {
-                    returnedNode = node;
+                    output = node;
                     maximumConstraintsCount = cellRemainingRestraintsCount;
                 }
             }
-            return returnedNode;
-
+            return output;
         }
 
         /// <summary>
@@ -367,14 +404,16 @@ namespace Sudoku_Graphic
         /// </returns>
         private List<char> GetRemainingPossibleValues(GraphNode node)
         {
-            List<char> remainingValues = new List<char>(node.Cell.Domain);
+            //List<char> remainingValues = new List<char>(node.Cell.Domain);
 
-            foreach(GraphArc arc in node.ConnectedArcs)
-            {
-                remainingValues.Remove(arc.GetOtherCellValue(node.Cell));
-            }
+            //foreach (GraphArc arc in node.ConnectedArcs)
+            //{
+            //    remainingValues.Remove(arc.GetOtherCellValue(node.Cell));
+            //}
 
-            return remainingValues;
+            //return remainingValues;
+
+            return node.Cell.Domain;
         }
 
         /// <summary>
@@ -390,7 +429,7 @@ namespace Sudoku_Graphic
             int constraintsOnCell = 0;
             foreach (GraphArc arc in node.ConnectedArcs)
             {
-                if(arc.GetOtherCellValue(node.Cell) == '.')
+                if (arc.GetOtherCellValue(node.Cell) == '.')
                 {
                     constraintsOnCell++;
                 }
@@ -408,7 +447,8 @@ namespace Sudoku_Graphic
         /// </returns>
         private List<char> OrderDomainValues(GraphNode node)
         {
-            return GetUnorderedCellValues(node);
+            //return GetUnorderedCellValues(node);
+            return LeastConstraingValue(node);
         }
 
         /// <summary>
@@ -436,12 +476,13 @@ namespace Sudoku_Graphic
         {
             Dictionary<char, int> remainingMinimalValues = new Dictionary<char, int>();
 
-            foreach(char c in node.Cell.Domain)
+            foreach (char c in node.Cell.Domain)
             {
                 node.Cell.Value = c;
                 int minRemainingValue = int.MaxValue;
-                foreach(GraphArc arc in node.ConnectedArcs) {
-                    if(arc.GetOtherCellValue(node.Cell) == '.')
+                foreach (GraphArc arc in node.ConnectedArcs)
+                {
+                    if (arc.GetOtherCellValue(node.Cell) == '.')
                     {
                         int cell2RemainingValues = GetRemainingPossibleValues(arc.GetOtherNode(node)).Count;
                         if (cell2RemainingValues < minRemainingValue)
@@ -466,14 +507,15 @@ namespace Sudoku_Graphic
 
         private void GenerateDomains()
         {
-            foreach(GraphNode node in nodes)
+            foreach (GraphNode node in nodes)
             {
-                if(node.Cell.Value != '.')
+                if (node.Cell.Value != '.')
                 {
                     node.Cell.Domain = new List<char>(new char[] { node.Cell.Value });
-                } else
+                }
+                else
                 {
-                    foreach(GraphArc arc in node.ConnectedArcs)
+                    foreach (GraphArc arc in node.ConnectedArcs)
                     {
                         node.Cell.RemoveFromDomain(arc.GetOtherCellValue(node.Cell));
                     }
@@ -484,7 +526,7 @@ namespace Sudoku_Graphic
         private List<Cell> ModifyNeighbouringCells(GraphNode node)
         {
             List<Cell> cellsWithChangedDomains = new List<Cell>();
-            foreach(GraphArc arc in node.ConnectedArcs)
+            foreach (GraphArc arc in node.ConnectedArcs)
             {
                 Cell neighbouringCell = arc.GetOtherNode(node).Cell;
                 if (neighbouringCell.Domain.Remove(node.Cell.Value))
@@ -493,7 +535,26 @@ namespace Sudoku_Graphic
                 }
             }
             return cellsWithChangedDomains;
-        } 
+        }
+
+
+        private Dictionary<Cell, List<char>> StoreOldDomains()
+        {
+            Dictionary<Cell, List<char>> oldDomains = new Dictionary<Cell, List<char>>();
+            foreach (GraphNode node in nodes)
+            {
+                oldDomains.Add(node.Cell, new List<char>(node.Cell.Domain));
+            }
+            return oldDomains;
+        }
+
+        private void RestoreOldDomains(Dictionary<Cell, List<char>> oldDomains)
+        {
+            foreach(Cell cell in oldDomains.Keys)
+            {
+                cell.Domain = new List<char>(oldDomains[cell]);
+            }
+        }
         #endregion
     }
 }
