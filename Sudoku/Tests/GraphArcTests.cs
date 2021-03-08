@@ -534,5 +534,25 @@ namespace Tests
             // Assert
             Assert.IsTrue(isEqual);
         }
+
+        [TestMethod]
+        public void T_Equals_GetReverseArc()
+        {
+            // Arrange
+            Cell cell = new Cell();
+            Cell cell2 = new Cell();
+            cell.Value = '1';
+            cell2.Value = 'A';
+            GraphNode graphNodeBgn = new GraphNode(cell);
+            GraphNode graphNodeEnd = new GraphNode(cell2);
+            GraphArc graphArc = new GraphArc(graphNodeBgn, graphNodeEnd);
+            GraphArc graphArc2 = new GraphArc(graphNodeEnd, graphNodeBgn);
+
+            // Act
+            GraphArc graphArcReverse = graphArc.GetReverseArc();
+
+            // Assert
+            Assert.AreEqual(graphArcReverse, graphArc2);
+        }
     }
 }
