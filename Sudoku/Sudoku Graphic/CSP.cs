@@ -555,6 +555,54 @@ namespace Sudoku_Graphic
                 cell.Domain = new List<char>(oldDomains[cell]);
             }
         }
+
+        private void GenerateCells()
+        {
+            for (var line = 0; line < Dimensions.GridSizeX; line++)
+            {
+                for (var column = 0; column < Dimensions.GridSizeY; column++)
+                {
+                    Cell cell = new Cell(line, column, dimensions.GridSizeX);
+                    cell.Value = '.';
+                    cell.ZoneNumber = dimensions.NumberOfSquaresOnLine() * (line / dimensions.SquareSizeX) + column / dimensions.SquareSizeY;
+                    GraphNode node = new GraphNode(cell);
+                    Nodes.Add(node);
+                }
+            }
+        }
+
+        /*private void GenerateSudoku()
+        {
+            GenerateCells();
+            GenerateArcs();
+            // ModifyNeighbouringCells
+            Random rng = new Random();
+            int numberOfSolutions = int.MaxValue;
+            while (numberOfSolutions != 1)
+            {
+                int posX = rng.Next(0, Dimensions.GridSizeX);
+                int posY = rng.Next(0, Dimensions.GridSizeY);
+                GraphNode node = Nodes.Find(gn => gn.Cell.PosX == posX && gn.Cell.PosY == posY);
+                Cell cell = node.Cell;
+                int indexDomain = rng.Next(0, cell.Domain.Count);
+
+                Dictionary<Cell, List<char>> oldDomains = StoreOldDomains();
+                cell.Value = cell.Domain[indexDomain];
+
+                numberOfSolutions = CountSolutions();
+                if (numberOfSolutions < 1)
+                {
+                    RestoreOldDomains(oldDomains);
+                    cell.Value = '.';
+                }
+            }
+        }
+
+        private bool GenerateSudokuRecursive()
+        {
+
+        }*/
+
         #endregion
     }
 }
