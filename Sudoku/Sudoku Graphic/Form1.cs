@@ -602,7 +602,11 @@ namespace Sudoku_Graphic
 
         private void BtnGenerate_Click(object sender, EventArgs e)
         {
-
+            actualDimensions = new GridDimensions(9, 9, 3, 3);
+            csp.Dimensions = actualDimensions;
+            csp.ClearLists();
+            csp.GenerateSudoku((10.0f / 100.0f) * (actualDimensions.GridSizeX * actualDimensions.GridSizeY));
+            UpdateGridDisplay_Regular();
         }
 
         private void Debug_Click(object sender, EventArgs e)
@@ -639,11 +643,11 @@ namespace Sudoku_Graphic
             csp.ClearLists();
             if (asCSP)
             {
-                MessageBox.Show("Structre utilisée : CSP");
+                MessageBox.Show("Structure utilisée : CSP");
             }
             else
             {
-                MessageBox.Show("Structre utilisée : Tableau");
+                MessageBox.Show("Structure utilisée : Tableau");
             }
 
         }

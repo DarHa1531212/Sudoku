@@ -96,6 +96,7 @@ namespace Sudoku_Graphic
         /// </summary>
         public void ClearLists()
         {
+            graphArcs.Clear();
             nodes.Clear();
         }
         #endregion
@@ -571,39 +572,72 @@ namespace Sudoku_Graphic
             }
         }
 
-        /*private void GenerateSudoku()
+        public void GenerateSudoku(float level)
         {
             GenerateCells();
-            GenerateDomains();
+            Console.WriteLine(Nodes.Count);
             GenerateArcs();
+            Console.WriteLine(graphArcs.Count);
 
-            // ModifyNeighbouringCells
             Random rng = new Random();
+            List<GraphNode> currentState = new List<GraphNode>(Nodes);
             int numberOfSolutions = int.MaxValue;
-            while (numberOfSolutions != 1)
+            Stack<GraphNode> states = new Stack<GraphNode>();
+            List<List<GraphNode>> forbiddenStates = new List<List<GraphNode>>();
+
+            while (numberOfSolutions != 1 || states.Count < level)
             {
                 int posX = rng.Next(0, Dimensions.GridSizeX);
                 int posY = rng.Next(0, Dimensions.GridSizeY);
-                GraphNode node = Nodes.Find(gn => gn.Cell.PosX == posX && gn.Cell.PosY == posY);
+                GraphNode node = Nodes[posX + posY*Dimensions.GridSizeX];
                 Cell cell = node.Cell;
                 int indexDomain = rng.Next(0, cell.Domain.Count);
+                if (cell.Value != '.')
+                {
+                    continue;
+                }
 
-                Dictionary<Cell, List<char>> oldDomains = StoreOldDomains();
+                //Dictionary<Cell, List<char>> oldDomains = StoreOldDomains();
                 cell.Value = cell.Domain[indexDomain];
+                //cell.Domain = new List<char> { cell.Value };
+                //ModifyNeighbouringCells(node);
+                currentState = new List<GraphNode>(Nodes);
+                states.Push(node);
 
                 numberOfSolutions = CountSolutions();
+                Console.WriteLine(numberOfSolutions + " | (" + cell.PosX + ", " + cell.PosY + ") = " + cell.Value);
+                Console.WriteLine(states.Count);
                 if (numberOfSolutions < 1)
                 {
-                    RestoreOldDomains(oldDomains);
-                    cell.Value = '.';
+                    forbiddenStates.Add(currentState);
+                    Console.WriteLine(forbiddenStates.Count);
+                    int stepsToBacktrack = forbiddenStates.FindAll(state => state.All(currentState.Contains)).Count;
+                    Console.WriteLine("stepsToBacktrack → " + stepsToBacktrack);
+
+                    //RestoreOldDomains(oldDomains);
+                    //cell.Value = '.';
+
+                    for (uint i = 0; i < stepsToBacktrack; i++)
+                    {
+                        states.Pop().Cell.Value = '.';
+                    }
                 }
             }
         }
 
-        private bool GenerateSudokuRecursive()
+        private int CountSolutions()
         {
-
-        }*/
+            List<GraphNode> NodesCopy = Nodes.ConvertAll(node => new GraphNode(new Cell(node.Cell)));
+            bool isSolved = BacktrackingSearch();
+            Nodes = NodesCopy;
+            GraphArcs.Clear();
+            GenerateArcs();
+            if (isSolved)
+            {
+                return 1;
+            }
+            return 0;
+        }
 
         #endregion
     }
