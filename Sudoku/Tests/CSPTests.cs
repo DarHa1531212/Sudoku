@@ -1707,18 +1707,18 @@ namespace Tests
             sudoku[3, 3].Cell.Value = '2';
             sudoku[0, 0].Cell.ZoneNumber = 0;
             sudoku[1, 0].Cell.ZoneNumber = 0;
-            sudoku[2, 0].Cell.ZoneNumber = 0;
-            sudoku[3, 0].Cell.ZoneNumber = 0;
-            sudoku[0, 1].Cell.ZoneNumber = 1;
-            sudoku[1, 1].Cell.ZoneNumber = 1;
+            sudoku[2, 0].Cell.ZoneNumber = 1;
+            sudoku[3, 0].Cell.ZoneNumber = 1;
+            sudoku[0, 1].Cell.ZoneNumber = 0;
+            sudoku[1, 1].Cell.ZoneNumber = 0;
             sudoku[2, 1].Cell.ZoneNumber = 1;
             sudoku[3, 1].Cell.ZoneNumber = 1;
             sudoku[0, 2].Cell.ZoneNumber = 2;
             sudoku[1, 2].Cell.ZoneNumber = 2;
-            sudoku[2, 2].Cell.ZoneNumber = 2;
-            sudoku[3, 2].Cell.ZoneNumber = 2;
-            sudoku[0, 3].Cell.ZoneNumber = 3;
-            sudoku[1, 3].Cell.ZoneNumber = 3;
+            sudoku[2, 2].Cell.ZoneNumber = 3;
+            sudoku[3, 2].Cell.ZoneNumber = 3;
+            sudoku[0, 3].Cell.ZoneNumber = 2;
+            sudoku[1, 3].Cell.ZoneNumber = 2;
             sudoku[2, 3].Cell.ZoneNumber = 3;
             sudoku[3, 3].Cell.ZoneNumber = 3;
             csp.Nodes.Add(sudoku[0, 0]);
@@ -2136,6 +2136,276 @@ namespace Tests
 
              // Act
              var isResolved = csp.BacktrackingSearch();
+
+            // Assert
+            Assert.IsFalse(isResolved);
+        }
+
+        [TestMethod]
+        public void T_RecursiveBacktracking_5x5_Unsolvable_ConstraintViolationSquare()
+        {
+            // Arrange
+            CSP csp = new CSP();
+            PrivateObject obj = new PrivateObject(csp);
+
+            GraphNode[,] sudoku = new GraphNode[,] {
+                {
+                    new GraphNode(new Cell(0, 0)),
+                    new GraphNode(new Cell(0, 1)),
+                    new GraphNode(new Cell(0, 2)),
+                    new GraphNode(new Cell(0, 3)),
+                },
+                {
+                    new GraphNode(new Cell(1, 0)),
+                    new GraphNode(new Cell(1, 1)),
+                    new GraphNode(new Cell(1, 2)),
+                    new GraphNode(new Cell(1, 3)),
+                },
+                {
+                    new GraphNode(new Cell(2, 0)),
+                    new GraphNode(new Cell(2, 1)),
+                    new GraphNode(new Cell(2, 2)),
+                    new GraphNode(new Cell(2, 3)),
+                },
+                {
+                    new GraphNode(new Cell(3, 0)),
+                    new GraphNode(new Cell(3, 1)),
+                    new GraphNode(new Cell(3, 2)),
+                    new GraphNode(new Cell(3, 3)),
+                }
+            };
+            sudoku[0, 0].Cell.Value = '1';
+            sudoku[1, 0].Cell.Value = '.';
+            sudoku[2, 0].Cell.Value = '.';
+            sudoku[3, 0].Cell.Value = '.';
+            sudoku[0, 1].Cell.Value = '.';
+            sudoku[1, 1].Cell.Value = '1';
+            sudoku[2, 1].Cell.Value = '.';
+            sudoku[3, 1].Cell.Value = '.';
+            sudoku[0, 2].Cell.Value = '.';
+            sudoku[1, 2].Cell.Value = '.';
+            sudoku[2, 2].Cell.Value = '.';
+            sudoku[3, 2].Cell.Value = '.';
+            sudoku[0, 3].Cell.Value = '.';
+            sudoku[1, 3].Cell.Value = '.';
+            sudoku[2, 3].Cell.Value = '.';
+            sudoku[3, 3].Cell.Value = '.';
+            sudoku[0, 0].Cell.ZoneNumber = 0;
+            sudoku[1, 0].Cell.ZoneNumber = 0;
+            sudoku[2, 0].Cell.ZoneNumber = 1;
+            sudoku[3, 0].Cell.ZoneNumber = 1;
+            sudoku[0, 1].Cell.ZoneNumber = 0;
+            sudoku[1, 1].Cell.ZoneNumber = 0;
+            sudoku[2, 1].Cell.ZoneNumber = 1;
+            sudoku[3, 1].Cell.ZoneNumber = 1;
+            sudoku[0, 2].Cell.ZoneNumber = 2;
+            sudoku[1, 2].Cell.ZoneNumber = 2;
+            sudoku[2, 2].Cell.ZoneNumber = 3;
+            sudoku[3, 2].Cell.ZoneNumber = 3;
+            sudoku[0, 3].Cell.ZoneNumber = 2;
+            sudoku[1, 3].Cell.ZoneNumber = 2;
+            sudoku[2, 3].Cell.ZoneNumber = 3;
+            sudoku[3, 3].Cell.ZoneNumber = 3;
+            csp.Nodes.Add(sudoku[0, 0]);
+            csp.Nodes.Add(sudoku[1, 0]);
+            csp.Nodes.Add(sudoku[2, 0]);
+            csp.Nodes.Add(sudoku[3, 0]);
+            csp.Nodes.Add(sudoku[0, 1]);
+            csp.Nodes.Add(sudoku[1, 1]);
+            csp.Nodes.Add(sudoku[2, 1]);
+            csp.Nodes.Add(sudoku[3, 1]);
+            csp.Nodes.Add(sudoku[0, 2]);
+            csp.Nodes.Add(sudoku[1, 2]);
+            csp.Nodes.Add(sudoku[2, 2]);
+            csp.Nodes.Add(sudoku[3, 2]);
+            csp.Nodes.Add(sudoku[0, 3]);
+            csp.Nodes.Add(sudoku[1, 3]);
+            csp.Nodes.Add(sudoku[2, 3]);
+            csp.Nodes.Add(sudoku[3, 3]);
+            csp.GenerateArcs();
+
+            // Act
+            var isResolved = csp.BacktrackingSearch();
+
+            // Assert
+            Assert.IsFalse(isResolved);
+        }
+
+        [TestMethod]
+        public void T_RecursiveBacktracking_5x5_Unsolvable_ConstraintViolationLine()
+        {
+            // Arrange
+            CSP csp = new CSP();
+            PrivateObject obj = new PrivateObject(csp);
+
+            GraphNode[,] sudoku = new GraphNode[,] {
+                {
+                    new GraphNode(new Cell(0, 0)),
+                    new GraphNode(new Cell(0, 1)),
+                    new GraphNode(new Cell(0, 2)),
+                    new GraphNode(new Cell(0, 3)),
+                },
+                {
+                    new GraphNode(new Cell(1, 0)),
+                    new GraphNode(new Cell(1, 1)),
+                    new GraphNode(new Cell(1, 2)),
+                    new GraphNode(new Cell(1, 3)),
+                },
+                {
+                    new GraphNode(new Cell(2, 0)),
+                    new GraphNode(new Cell(2, 1)),
+                    new GraphNode(new Cell(2, 2)),
+                    new GraphNode(new Cell(2, 3)),
+                },
+                {
+                    new GraphNode(new Cell(3, 0)),
+                    new GraphNode(new Cell(3, 1)),
+                    new GraphNode(new Cell(3, 2)),
+                    new GraphNode(new Cell(3, 3)),
+                }
+            };
+            sudoku[0, 0].Cell.Value = '1';
+            sudoku[1, 0].Cell.Value = '.';
+            sudoku[2, 0].Cell.Value = '.';
+            sudoku[3, 0].Cell.Value = '1';
+            sudoku[0, 1].Cell.Value = '.';
+            sudoku[1, 1].Cell.Value = '.';
+            sudoku[2, 1].Cell.Value = '.';
+            sudoku[3, 1].Cell.Value = '.';
+            sudoku[0, 2].Cell.Value = '.';
+            sudoku[1, 2].Cell.Value = '.';
+            sudoku[2, 2].Cell.Value = '.';
+            sudoku[3, 2].Cell.Value = '.';
+            sudoku[0, 3].Cell.Value = '.';
+            sudoku[1, 3].Cell.Value = '.';
+            sudoku[2, 3].Cell.Value = '.';
+            sudoku[3, 3].Cell.Value = '.';
+            sudoku[0, 0].Cell.ZoneNumber = 0;
+            sudoku[1, 0].Cell.ZoneNumber = 0;
+            sudoku[2, 0].Cell.ZoneNumber = 1;
+            sudoku[3, 0].Cell.ZoneNumber = 1;
+            sudoku[0, 1].Cell.ZoneNumber = 0;
+            sudoku[1, 1].Cell.ZoneNumber = 0;
+            sudoku[2, 1].Cell.ZoneNumber = 1;
+            sudoku[3, 1].Cell.ZoneNumber = 1;
+            sudoku[0, 2].Cell.ZoneNumber = 2;
+            sudoku[1, 2].Cell.ZoneNumber = 2;
+            sudoku[2, 2].Cell.ZoneNumber = 3;
+            sudoku[3, 2].Cell.ZoneNumber = 3;
+            sudoku[0, 3].Cell.ZoneNumber = 2;
+            sudoku[1, 3].Cell.ZoneNumber = 2;
+            sudoku[2, 3].Cell.ZoneNumber = 3;
+            sudoku[3, 3].Cell.ZoneNumber = 3;
+            csp.Nodes.Add(sudoku[0, 0]);
+            csp.Nodes.Add(sudoku[1, 0]);
+            csp.Nodes.Add(sudoku[2, 0]);
+            csp.Nodes.Add(sudoku[3, 0]);
+            csp.Nodes.Add(sudoku[0, 1]);
+            csp.Nodes.Add(sudoku[1, 1]);
+            csp.Nodes.Add(sudoku[2, 1]);
+            csp.Nodes.Add(sudoku[3, 1]);
+            csp.Nodes.Add(sudoku[0, 2]);
+            csp.Nodes.Add(sudoku[1, 2]);
+            csp.Nodes.Add(sudoku[2, 2]);
+            csp.Nodes.Add(sudoku[3, 2]);
+            csp.Nodes.Add(sudoku[0, 3]);
+            csp.Nodes.Add(sudoku[1, 3]);
+            csp.Nodes.Add(sudoku[2, 3]);
+            csp.Nodes.Add(sudoku[3, 3]);
+            csp.GenerateArcs();
+
+            // Act
+            var isResolved = csp.BacktrackingSearch();
+
+            // Assert
+            Assert.IsFalse(isResolved);
+        }
+
+        [TestMethod]
+        public void T_RecursiveBacktracking_5x5_Unsolvable_ConstraintViolationColumn()
+        {
+            // Arrange
+            CSP csp = new CSP();
+            PrivateObject obj = new PrivateObject(csp);
+
+            GraphNode[,] sudoku = new GraphNode[,] {
+                {
+                    new GraphNode(new Cell(0, 0)),
+                    new GraphNode(new Cell(0, 1)),
+                    new GraphNode(new Cell(0, 2)),
+                    new GraphNode(new Cell(0, 3)),
+                },
+                {
+                    new GraphNode(new Cell(1, 0)),
+                    new GraphNode(new Cell(1, 1)),
+                    new GraphNode(new Cell(1, 2)),
+                    new GraphNode(new Cell(1, 3)),
+                },
+                {
+                    new GraphNode(new Cell(2, 0)),
+                    new GraphNode(new Cell(2, 1)),
+                    new GraphNode(new Cell(2, 2)),
+                    new GraphNode(new Cell(2, 3)),
+                },
+                {
+                    new GraphNode(new Cell(3, 0)),
+                    new GraphNode(new Cell(3, 1)),
+                    new GraphNode(new Cell(3, 2)),
+                    new GraphNode(new Cell(3, 3)),
+                }
+            };
+            sudoku[0, 0].Cell.Value = '1';
+            sudoku[1, 0].Cell.Value = '.';
+            sudoku[2, 0].Cell.Value = '.';
+            sudoku[3, 0].Cell.Value = '.';
+            sudoku[0, 1].Cell.Value = '.';
+            sudoku[1, 1].Cell.Value = '.';
+            sudoku[2, 1].Cell.Value = '.';
+            sudoku[3, 1].Cell.Value = '.';
+            sudoku[0, 2].Cell.Value = '.';
+            sudoku[1, 2].Cell.Value = '.';
+            sudoku[2, 2].Cell.Value = '.';
+            sudoku[3, 2].Cell.Value = '.';
+            sudoku[0, 3].Cell.Value = '1';
+            sudoku[1, 3].Cell.Value = '.';
+            sudoku[2, 3].Cell.Value = '.';
+            sudoku[3, 3].Cell.Value = '.';
+            sudoku[0, 0].Cell.ZoneNumber = 0;
+            sudoku[1, 0].Cell.ZoneNumber = 0;
+            sudoku[2, 0].Cell.ZoneNumber = 1;
+            sudoku[3, 0].Cell.ZoneNumber = 1;
+            sudoku[0, 1].Cell.ZoneNumber = 0;
+            sudoku[1, 1].Cell.ZoneNumber = 0;
+            sudoku[2, 1].Cell.ZoneNumber = 1;
+            sudoku[3, 1].Cell.ZoneNumber = 1;
+            sudoku[0, 2].Cell.ZoneNumber = 2;
+            sudoku[1, 2].Cell.ZoneNumber = 2;
+            sudoku[2, 2].Cell.ZoneNumber = 3;
+            sudoku[3, 2].Cell.ZoneNumber = 3;
+            sudoku[0, 3].Cell.ZoneNumber = 2;
+            sudoku[1, 3].Cell.ZoneNumber = 2;
+            sudoku[2, 3].Cell.ZoneNumber = 3;
+            sudoku[3, 3].Cell.ZoneNumber = 3;
+            csp.Nodes.Add(sudoku[0, 0]);
+            csp.Nodes.Add(sudoku[1, 0]);
+            csp.Nodes.Add(sudoku[2, 0]);
+            csp.Nodes.Add(sudoku[3, 0]);
+            csp.Nodes.Add(sudoku[0, 1]);
+            csp.Nodes.Add(sudoku[1, 1]);
+            csp.Nodes.Add(sudoku[2, 1]);
+            csp.Nodes.Add(sudoku[3, 1]);
+            csp.Nodes.Add(sudoku[0, 2]);
+            csp.Nodes.Add(sudoku[1, 2]);
+            csp.Nodes.Add(sudoku[2, 2]);
+            csp.Nodes.Add(sudoku[3, 2]);
+            csp.Nodes.Add(sudoku[0, 3]);
+            csp.Nodes.Add(sudoku[1, 3]);
+            csp.Nodes.Add(sudoku[2, 3]);
+            csp.Nodes.Add(sudoku[3, 3]);
+            csp.GenerateArcs();
+
+            // Act
+            var isResolved = csp.BacktrackingSearch();
 
             // Assert
             Assert.IsFalse(isResolved);
