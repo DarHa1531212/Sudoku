@@ -957,7 +957,8 @@ namespace Tests
             csp.Nodes.Add(sudoku[8, 8]);
             csp.Nodes.Add(sudoku[1, 0]);
             csp.Nodes.Add(sudoku[2, 0]);
-            
+            csp.GenerateArcs();
+
             List<GraphNode> expected = new List<GraphNode>();
             sudoku[0, 0].Cell.Value = '9';
             sudoku[1, 0].Cell.Value = '4';
@@ -1481,6 +1482,7 @@ namespace Tests
             csp.Nodes.Add(sudoku[8, 8]);
             csp.Nodes.Add(sudoku[1, 0]);
             csp.Nodes.Add(sudoku[2, 0]);
+            csp.GenerateArcs();
 
             List<GraphNode> expected = new List<GraphNode>();
             sudoku[0, 0].Cell.Value = '6';
@@ -1667,164 +1669,109 @@ namespace Tests
                     new GraphNode(new Cell(0, 1)),
                     new GraphNode(new Cell(0, 2)),
                     new GraphNode(new Cell(0, 3)),
-                    new GraphNode(new Cell(0, 4)),
                 },
                 {
                     new GraphNode(new Cell(1, 0)),
                     new GraphNode(new Cell(1, 1)),
                     new GraphNode(new Cell(1, 2)),
                     new GraphNode(new Cell(1, 3)),
-                    new GraphNode(new Cell(1, 4)),
                 },
                 {
                     new GraphNode(new Cell(2, 0)),
                     new GraphNode(new Cell(2, 1)),
                     new GraphNode(new Cell(2, 2)),
                     new GraphNode(new Cell(2, 3)),
-                    new GraphNode(new Cell(2, 4)),
                 },
                 {
                     new GraphNode(new Cell(3, 0)),
                     new GraphNode(new Cell(3, 1)),
                     new GraphNode(new Cell(3, 2)),
                     new GraphNode(new Cell(3, 3)),
-                    new GraphNode(new Cell(3, 4)),
-                },
-                {
-                    new GraphNode(new Cell(4, 0)),
-                    new GraphNode(new Cell(4, 1)),
-                    new GraphNode(new Cell(4, 2)),
-                    new GraphNode(new Cell(4, 3)),
-                    new GraphNode(new Cell(4, 4)),
                 }
             };
             sudoku[0, 0].Cell.Value = '1';
             sudoku[1, 0].Cell.Value = '.';
             sudoku[2, 0].Cell.Value = '3';
             sudoku[3, 0].Cell.Value = '4';
-            sudoku[4, 0].Cell.Value = '5';
-            sudoku[0, 1].Cell.Value = '2';
+            sudoku[0, 1].Cell.Value = '.';
             sudoku[1, 1].Cell.Value = '3';
-            sudoku[2, 1].Cell.Value = '4';
-            sudoku[3, 1].Cell.Value = '5';
-            sudoku[4, 1].Cell.Value = '.';
-            sudoku[0, 2].Cell.Value = '3';
-            sudoku[1, 2].Cell.Value = '4';
-            sudoku[2, 2].Cell.Value = '5';
-            sudoku[3, 2].Cell.Value = '2';
-            sudoku[4, 2].Cell.Value = '1';
-            sudoku[0, 3].Cell.Value = '4';
-            sudoku[1, 3].Cell.Value = '.';
-            sudoku[2, 3].Cell.Value = '1';
+            sudoku[2, 1].Cell.Value = '2';
+            sudoku[3, 1].Cell.Value = '1';
+            sudoku[0, 2].Cell.Value = '2';
+            sudoku[1, 2].Cell.Value = '1';
+            sudoku[2, 2].Cell.Value = '4';
+            sudoku[3, 2].Cell.Value = '.';
+            sudoku[0, 3].Cell.Value = '3';
+            sudoku[1, 3].Cell.Value = '4';
+            sudoku[2, 3].Cell.Value = '.';
             sudoku[3, 3].Cell.Value = '2';
-            sudoku[4, 3].Cell.Value = '3';
-            sudoku[0, 4].Cell.Value = '5';
-            sudoku[1, 4].Cell.Value = '1';
-            sudoku[2, 4].Cell.Value = '2';
-            sudoku[3, 4].Cell.Value = '3';
-            sudoku[4, 4].Cell.Value = '4';
             sudoku[0, 0].Cell.ZoneNumber = 0;
             sudoku[1, 0].Cell.ZoneNumber = 0;
             sudoku[2, 0].Cell.ZoneNumber = 0;
-            sudoku[3, 0].Cell.ZoneNumber = 1;
-            sudoku[4, 0].Cell.ZoneNumber = 1;
-            sudoku[0, 1].Cell.ZoneNumber = 0;
-            sudoku[1, 1].Cell.ZoneNumber = 0;
-            sudoku[2, 1].Cell.ZoneNumber = 0;
+            sudoku[3, 0].Cell.ZoneNumber = 0;
+            sudoku[0, 1].Cell.ZoneNumber = 1;
+            sudoku[1, 1].Cell.ZoneNumber = 1;
+            sudoku[2, 1].Cell.ZoneNumber = 1;
             sudoku[3, 1].Cell.ZoneNumber = 1;
-            sudoku[4, 1].Cell.ZoneNumber = 1;
-            sudoku[0, 2].Cell.ZoneNumber = 0;
-            sudoku[1, 2].Cell.ZoneNumber = 0;
-            sudoku[2, 2].Cell.ZoneNumber = 0;
-            sudoku[3, 2].Cell.ZoneNumber = 1;
-            sudoku[4, 2].Cell.ZoneNumber = 1;
+            sudoku[0, 2].Cell.ZoneNumber = 2;
+            sudoku[1, 2].Cell.ZoneNumber = 2;
+            sudoku[2, 2].Cell.ZoneNumber = 2;
+            sudoku[3, 2].Cell.ZoneNumber = 2;
             sudoku[0, 3].Cell.ZoneNumber = 3;
             sudoku[1, 3].Cell.ZoneNumber = 3;
             sudoku[2, 3].Cell.ZoneNumber = 3;
-            sudoku[3, 3].Cell.ZoneNumber = 4;
-            sudoku[4, 3].Cell.ZoneNumber = 4;
-            sudoku[0, 4].Cell.ZoneNumber = 3;
-            sudoku[1, 4].Cell.ZoneNumber = 3;
-            sudoku[2, 4].Cell.ZoneNumber = 3;
-            sudoku[3, 4].Cell.ZoneNumber = 4;
-            sudoku[4, 4].Cell.ZoneNumber = 4;
+            sudoku[3, 3].Cell.ZoneNumber = 3;
             csp.Nodes.Add(sudoku[0, 0]);
             csp.Nodes.Add(sudoku[1, 0]);
             csp.Nodes.Add(sudoku[2, 0]);
             csp.Nodes.Add(sudoku[3, 0]);
-            csp.Nodes.Add(sudoku[4, 0]);
             csp.Nodes.Add(sudoku[0, 1]);
             csp.Nodes.Add(sudoku[1, 1]);
             csp.Nodes.Add(sudoku[2, 1]);
             csp.Nodes.Add(sudoku[3, 1]);
-            csp.Nodes.Add(sudoku[4, 1]);
             csp.Nodes.Add(sudoku[0, 2]);
             csp.Nodes.Add(sudoku[1, 2]);
             csp.Nodes.Add(sudoku[2, 2]);
             csp.Nodes.Add(sudoku[3, 2]);
-            csp.Nodes.Add(sudoku[4, 2]);
             csp.Nodes.Add(sudoku[0, 3]);
             csp.Nodes.Add(sudoku[1, 3]);
             csp.Nodes.Add(sudoku[2, 3]);
             csp.Nodes.Add(sudoku[3, 3]);
-            csp.Nodes.Add(sudoku[4, 3]);
-            csp.Nodes.Add(sudoku[0, 4]);
-            csp.Nodes.Add(sudoku[1, 4]);
-            csp.Nodes.Add(sudoku[2, 4]);
-            csp.Nodes.Add(sudoku[3, 4]);
-            csp.Nodes.Add(sudoku[4, 4]);
+            csp.GenerateArcs();
 
             List<GraphNode> expected = new List<GraphNode>();
             sudoku[0, 0].Cell.Value = '1';
             sudoku[1, 0].Cell.Value = '2';
             sudoku[2, 0].Cell.Value = '3';
             sudoku[3, 0].Cell.Value = '4';
-            sudoku[4, 0].Cell.Value = '5';
-            sudoku[0, 1].Cell.Value = '2';
+            sudoku[0, 1].Cell.Value = '4';
             sudoku[1, 1].Cell.Value = '3';
-            sudoku[2, 1].Cell.Value = '4';
-            sudoku[3, 1].Cell.Value = '5';
-            sudoku[4, 1].Cell.Value = '2';
-            sudoku[0, 2].Cell.Value = '3';
-            sudoku[1, 2].Cell.Value = '4';
-            sudoku[2, 2].Cell.Value = '5';
-            sudoku[3, 2].Cell.Value = '2';
-            sudoku[4, 2].Cell.Value = '1';
-            sudoku[0, 3].Cell.Value = '4';
-            sudoku[1, 3].Cell.Value = '5';
+            sudoku[2, 1].Cell.Value = '2';
+            sudoku[3, 1].Cell.Value = '1';
+            sudoku[0, 2].Cell.Value = '2';
+            sudoku[1, 2].Cell.Value = '1';
+            sudoku[2, 2].Cell.Value = '4';
+            sudoku[3, 2].Cell.Value = '3';
+            sudoku[0, 3].Cell.Value = '3';
+            sudoku[1, 3].Cell.Value = '4';
             sudoku[2, 3].Cell.Value = '1';
             sudoku[3, 3].Cell.Value = '2';
-            sudoku[4, 3].Cell.Value = '3';
-            sudoku[0, 4].Cell.Value = '5';
-            sudoku[1, 4].Cell.Value = '1';
-            sudoku[2, 4].Cell.Value = '2';
-            sudoku[3, 4].Cell.Value = '3';
-            sudoku[4, 4].Cell.Value = '4';
             expected.Add(sudoku[0, 0]);
             expected.Add(sudoku[1, 0]);
             expected.Add(sudoku[2, 0]);
             expected.Add(sudoku[3, 0]);
-            expected.Add(sudoku[4, 0]);
             expected.Add(sudoku[0, 1]);
             expected.Add(sudoku[1, 1]);
             expected.Add(sudoku[2, 1]);
             expected.Add(sudoku[3, 1]);
-            expected.Add(sudoku[4, 1]);
             expected.Add(sudoku[0, 2]);
             expected.Add(sudoku[1, 2]);
             expected.Add(sudoku[2, 2]);
             expected.Add(sudoku[3, 2]);
-            expected.Add(sudoku[4, 2]);
             expected.Add(sudoku[0, 3]);
             expected.Add(sudoku[1, 3]);
             expected.Add(sudoku[2, 3]);
             expected.Add(sudoku[3, 3]);
-            expected.Add(sudoku[4, 3]);
-            expected.Add(sudoku[0, 4]);
-            expected.Add(sudoku[1, 4]);
-            expected.Add(sudoku[2, 4]);
-            expected.Add(sudoku[3, 4]);
-            expected.Add(sudoku[4, 4]);
 
             // Act
             var isResolved = csp.BacktrackingSearch();
@@ -1833,5 +1780,413 @@ namespace Tests
             Assert.IsTrue(isResolved, "Isn't resolved.");
             CollectionAssert.AreEqual(csp.Nodes, expected, "Wrong values.");
         }
+
+        [TestMethod]
+        public void T_RecursiveBacktracking_9x9_Unsolvable()
+        {
+            // Arrange
+            CSP csp = new CSP();
+            PrivateObject obj = new PrivateObject(csp);
+
+            GraphNode[,] sudoku = new GraphNode[,] {
+                {
+                    new GraphNode(new Cell(0, 0)),
+                    new GraphNode(new Cell(0, 1)),
+                    new GraphNode(new Cell(0, 2)),
+                    new GraphNode(new Cell(0, 3)),
+                    new GraphNode(new Cell(0, 4)),
+                    new GraphNode(new Cell(0, 5)),
+                    new GraphNode(new Cell(0, 6)),
+                    new GraphNode(new Cell(0, 7)),
+                    new GraphNode(new Cell(0, 8)),
+                },
+                {
+                    new GraphNode(new Cell(1, 0)),
+                    new GraphNode(new Cell(1, 1)),
+                    new GraphNode(new Cell(1, 2)),
+                    new GraphNode(new Cell(1, 3)),
+                    new GraphNode(new Cell(1, 4)),
+                    new GraphNode(new Cell(1, 5)),
+                    new GraphNode(new Cell(1, 6)),
+                    new GraphNode(new Cell(1, 7)),
+                    new GraphNode(new Cell(1, 8)),
+                },
+                {
+                    new GraphNode(new Cell(2, 0)),
+                    new GraphNode(new Cell(2, 1)),
+                    new GraphNode(new Cell(2, 2)),
+                    new GraphNode(new Cell(2, 3)),
+                    new GraphNode(new Cell(2, 4)),
+                    new GraphNode(new Cell(2, 5)),
+                    new GraphNode(new Cell(2, 6)),
+                    new GraphNode(new Cell(2, 7)),
+                    new GraphNode(new Cell(2, 8)),
+                },
+                {
+                    new GraphNode(new Cell(3, 0)),
+                    new GraphNode(new Cell(3, 1)),
+                    new GraphNode(new Cell(3, 2)),
+                    new GraphNode(new Cell(3, 3)),
+                    new GraphNode(new Cell(3, 4)),
+                    new GraphNode(new Cell(3, 5)),
+                    new GraphNode(new Cell(3, 6)),
+                    new GraphNode(new Cell(3, 7)),
+                    new GraphNode(new Cell(3, 8)),
+                },
+                {
+                    new GraphNode(new Cell(4, 0)),
+                    new GraphNode(new Cell(4, 1)),
+                    new GraphNode(new Cell(4, 2)),
+                    new GraphNode(new Cell(4, 3)),
+                    new GraphNode(new Cell(4, 4)),
+                    new GraphNode(new Cell(4, 5)),
+                    new GraphNode(new Cell(4, 6)),
+                    new GraphNode(new Cell(4, 7)),
+                    new GraphNode(new Cell(4, 8)),
+                },
+                {
+                    new GraphNode(new Cell(5, 0)),
+                    new GraphNode(new Cell(5, 1)),
+                    new GraphNode(new Cell(5, 2)),
+                    new GraphNode(new Cell(5, 3)),
+                    new GraphNode(new Cell(5, 4)),
+                    new GraphNode(new Cell(5, 5)),
+                    new GraphNode(new Cell(5, 6)),
+                    new GraphNode(new Cell(5, 7)),
+                    new GraphNode(new Cell(5, 8)),
+                },
+                {
+                    new GraphNode(new Cell(6, 0)),
+                    new GraphNode(new Cell(6, 1)),
+                    new GraphNode(new Cell(6, 2)),
+                    new GraphNode(new Cell(6, 3)),
+                    new GraphNode(new Cell(6, 4)),
+                    new GraphNode(new Cell(6, 5)),
+                    new GraphNode(new Cell(6, 6)),
+                    new GraphNode(new Cell(6, 7)),
+                    new GraphNode(new Cell(6, 8)),
+                },
+                {
+                    new GraphNode(new Cell(7, 0)),
+                    new GraphNode(new Cell(7, 1)),
+                    new GraphNode(new Cell(7, 2)),
+                    new GraphNode(new Cell(7, 3)),
+                    new GraphNode(new Cell(7, 4)),
+                    new GraphNode(new Cell(7, 5)),
+                    new GraphNode(new Cell(7, 6)),
+                    new GraphNode(new Cell(7, 7)),
+                    new GraphNode(new Cell(7, 8)),
+                },
+                {
+                    new GraphNode(new Cell(8, 0)),
+                    new GraphNode(new Cell(8, 1)),
+                    new GraphNode(new Cell(8, 2)),
+                    new GraphNode(new Cell(8, 3)),
+                    new GraphNode(new Cell(8, 4)),
+                    new GraphNode(new Cell(8, 5)),
+                    new GraphNode(new Cell(8, 6)),
+                    new GraphNode(new Cell(8, 7)),
+                    new GraphNode(new Cell(8, 8)),
+                }
+            };
+            sudoku[0, 0].Cell.Value = '1';
+            sudoku[1, 0].Cell.Value = '2';
+            sudoku[2, 0].Cell.Value = '3';
+            sudoku[3, 0].Cell.Value = '.';
+            sudoku[4, 0].Cell.Value = '.';
+            sudoku[5, 0].Cell.Value = '.';
+            sudoku[6, 0].Cell.Value = '7';
+            sudoku[7, 0].Cell.Value = '4';
+            sudoku[8, 0].Cell.Value = '5';
+            sudoku[0, 1].Cell.Value = '4';
+            sudoku[1, 1].Cell.Value = '5';
+            sudoku[2, 1].Cell.Value = '6';
+            sudoku[3, 1].Cell.Value = '.';
+            sudoku[4, 1].Cell.Value = '.';
+            sudoku[5, 1].Cell.Value = '.';
+            sudoku[6, 1].Cell.Value = '8';
+            sudoku[7, 1].Cell.Value = '2';
+            sudoku[8, 1].Cell.Value = '3';
+            sudoku[0, 2].Cell.Value = '7';
+            sudoku[1, 2].Cell.Value = '8';
+            sudoku[2, 2].Cell.Value = '9';
+            sudoku[3, 2].Cell.Value = '.';
+            sudoku[4, 2].Cell.Value = '.';
+            sudoku[5, 2].Cell.Value = '.';
+            sudoku[6, 2].Cell.Value = '6';
+            sudoku[7, 2].Cell.Value = '1';
+            sudoku[8, 2].Cell.Value = '.';
+            sudoku[0, 3].Cell.Value = '.';
+            sudoku[1, 3].Cell.Value = '.';
+            sudoku[2, 3].Cell.Value = '.';
+            sudoku[3, 3].Cell.Value = '.';
+            sudoku[4, 3].Cell.Value = '.';
+            sudoku[5, 3].Cell.Value = '.';
+            sudoku[6, 3].Cell.Value = '.';
+            sudoku[7, 3].Cell.Value = '.';
+            sudoku[8, 3].Cell.Value = '.';
+            sudoku[0, 4].Cell.Value = '.';
+            sudoku[1, 4].Cell.Value = '.';
+            sudoku[2, 4].Cell.Value = '.';
+            sudoku[3, 4].Cell.Value = '.';
+            sudoku[4, 4].Cell.Value = '.';
+            sudoku[5, 4].Cell.Value = '.';
+            sudoku[6, 4].Cell.Value = '.';
+            sudoku[7, 4].Cell.Value = '.';
+            sudoku[8, 4].Cell.Value = '.';
+            sudoku[0, 5].Cell.Value = '.';
+            sudoku[1, 5].Cell.Value = '.';
+            sudoku[2, 5].Cell.Value = '.';
+            sudoku[3, 5].Cell.Value = '.';
+            sudoku[4, 5].Cell.Value = '.';
+            sudoku[5, 5].Cell.Value = '.';
+            sudoku[6, 5].Cell.Value = '.';
+            sudoku[7, 5].Cell.Value = '.';
+            sudoku[8, 5].Cell.Value = '.';
+            sudoku[0, 6].Cell.Value = '.';
+            sudoku[1, 6].Cell.Value = '.';
+            sudoku[2, 6].Cell.Value = '.';
+            sudoku[3, 6].Cell.Value = '.';
+            sudoku[4, 6].Cell.Value = '.';
+            sudoku[5, 6].Cell.Value = '.';
+            sudoku[6, 6].Cell.Value = '.';
+            sudoku[7, 6].Cell.Value = '.';
+            sudoku[8, 6].Cell.Value = '.';
+            sudoku[0, 7].Cell.Value = '.';
+            sudoku[1, 7].Cell.Value = '.';
+            sudoku[2, 7].Cell.Value = '.';
+            sudoku[3, 7].Cell.Value = '.';
+            sudoku[4, 7].Cell.Value = '.';
+            sudoku[5, 7].Cell.Value = '.';
+            sudoku[6, 7].Cell.Value = '.';
+            sudoku[7, 7].Cell.Value = '.';
+            sudoku[8, 7].Cell.Value = '.';
+            sudoku[0, 8].Cell.Value = '.';
+            sudoku[1, 8].Cell.Value = '.';
+            sudoku[2, 8].Cell.Value = '.';
+            sudoku[3, 8].Cell.Value = '.';
+            sudoku[4, 8].Cell.Value = '.';
+            sudoku[5, 8].Cell.Value = '.';
+            sudoku[6, 8].Cell.Value = '.';
+            sudoku[7, 8].Cell.Value = '.';
+            sudoku[8, 8].Cell.Value = '.';
+            sudoku[0, 0].Cell.ZoneNumber = 0;
+            sudoku[1, 0].Cell.ZoneNumber = 0;
+            sudoku[2, 0].Cell.ZoneNumber = 0;
+            sudoku[3, 0].Cell.ZoneNumber = 1;
+            sudoku[4, 0].Cell.ZoneNumber = 1;
+            sudoku[5, 0].Cell.ZoneNumber = 1;
+            sudoku[6, 0].Cell.ZoneNumber = 2;
+            sudoku[7, 0].Cell.ZoneNumber = 2;
+            sudoku[8, 0].Cell.ZoneNumber = 2;
+            sudoku[0, 1].Cell.ZoneNumber = 0;
+            sudoku[1, 1].Cell.ZoneNumber = 0;
+            sudoku[2, 1].Cell.ZoneNumber = 0;
+            sudoku[3, 1].Cell.ZoneNumber = 1;
+            sudoku[4, 1].Cell.ZoneNumber = 1;
+            sudoku[5, 1].Cell.ZoneNumber = 1;
+            sudoku[6, 1].Cell.ZoneNumber = 2;
+            sudoku[7, 1].Cell.ZoneNumber = 2;
+            sudoku[8, 1].Cell.ZoneNumber = 2;
+            sudoku[0, 2].Cell.ZoneNumber = 0;
+            sudoku[1, 2].Cell.ZoneNumber = 0;
+            sudoku[2, 2].Cell.ZoneNumber = 0;
+            sudoku[3, 2].Cell.ZoneNumber = 1;
+            sudoku[4, 2].Cell.ZoneNumber = 1;
+            sudoku[5, 2].Cell.ZoneNumber = 1;
+            sudoku[6, 2].Cell.ZoneNumber = 2;
+            sudoku[7, 2].Cell.ZoneNumber = 2;
+            sudoku[8, 2].Cell.ZoneNumber = 2;
+            sudoku[0, 3].Cell.ZoneNumber = 3;
+            sudoku[1, 3].Cell.ZoneNumber = 3;
+            sudoku[2, 3].Cell.ZoneNumber = 3;
+            sudoku[3, 3].Cell.ZoneNumber = 4;
+            sudoku[4, 3].Cell.ZoneNumber = 4;
+            sudoku[5, 3].Cell.ZoneNumber = 4;
+            sudoku[6, 3].Cell.ZoneNumber = 5;
+            sudoku[7, 3].Cell.ZoneNumber = 5;
+            sudoku[8, 3].Cell.ZoneNumber = 5;
+            sudoku[0, 4].Cell.ZoneNumber = 3;
+            sudoku[1, 4].Cell.ZoneNumber = 3;
+            sudoku[2, 4].Cell.ZoneNumber = 3;
+            sudoku[3, 4].Cell.ZoneNumber = 4;
+            sudoku[4, 4].Cell.ZoneNumber = 4;
+            sudoku[5, 4].Cell.ZoneNumber = 4;
+            sudoku[6, 4].Cell.ZoneNumber = 5;
+            sudoku[7, 4].Cell.ZoneNumber = 5;
+            sudoku[8, 4].Cell.ZoneNumber = 5;
+            sudoku[0, 5].Cell.ZoneNumber = 3;
+            sudoku[1, 5].Cell.ZoneNumber = 3;
+            sudoku[2, 5].Cell.ZoneNumber = 3;
+            sudoku[3, 5].Cell.ZoneNumber = 4;
+            sudoku[4, 5].Cell.ZoneNumber = 4;
+            sudoku[5, 5].Cell.ZoneNumber = 4;
+            sudoku[6, 5].Cell.ZoneNumber = 5;
+            sudoku[7, 5].Cell.ZoneNumber = 5;
+            sudoku[8, 5].Cell.ZoneNumber = 5;
+            sudoku[0, 6].Cell.ZoneNumber = 6;
+            sudoku[1, 6].Cell.ZoneNumber = 6;
+            sudoku[2, 6].Cell.ZoneNumber = 6;
+            sudoku[3, 6].Cell.ZoneNumber = 7;
+            sudoku[4, 6].Cell.ZoneNumber = 7;
+            sudoku[5, 6].Cell.ZoneNumber = 7;
+            sudoku[6, 6].Cell.ZoneNumber = 8;
+            sudoku[7, 6].Cell.ZoneNumber = 8;
+            sudoku[8, 6].Cell.ZoneNumber = 8;
+            sudoku[0, 7].Cell.ZoneNumber = 6;
+            sudoku[1, 7].Cell.ZoneNumber = 6;
+            sudoku[2, 7].Cell.ZoneNumber = 6;
+            sudoku[3, 7].Cell.ZoneNumber = 7;
+            sudoku[4, 7].Cell.ZoneNumber = 7;
+            sudoku[5, 7].Cell.ZoneNumber = 7;
+            sudoku[6, 7].Cell.ZoneNumber = 8;
+            sudoku[7, 7].Cell.ZoneNumber = 8;
+            sudoku[8, 7].Cell.ZoneNumber = 8;
+            sudoku[0, 8].Cell.ZoneNumber = 6;
+            sudoku[1, 8].Cell.ZoneNumber = 6;
+            sudoku[2, 8].Cell.ZoneNumber = 6;
+            sudoku[3, 8].Cell.ZoneNumber = 7;
+            sudoku[4, 8].Cell.ZoneNumber = 7;
+            sudoku[5, 8].Cell.ZoneNumber = 7;
+            sudoku[6, 8].Cell.ZoneNumber = 8;
+            sudoku[7, 8].Cell.ZoneNumber = 8;
+            sudoku[8, 8].Cell.ZoneNumber = 8;
+            csp.Nodes.Add(sudoku[0, 0]);
+            csp.Nodes.Add(sudoku[3, 0]);
+            csp.Nodes.Add(sudoku[4, 0]);
+            csp.Nodes.Add(sudoku[5, 0]);
+            csp.Nodes.Add(sudoku[6, 0]);
+            csp.Nodes.Add(sudoku[7, 0]);
+            csp.Nodes.Add(sudoku[8, 0]);
+            csp.Nodes.Add(sudoku[0, 1]);
+            csp.Nodes.Add(sudoku[1, 1]);
+            csp.Nodes.Add(sudoku[2, 1]);
+            csp.Nodes.Add(sudoku[3, 1]);
+            csp.Nodes.Add(sudoku[4, 1]);
+            csp.Nodes.Add(sudoku[5, 1]);
+            csp.Nodes.Add(sudoku[6, 1]);
+            csp.Nodes.Add(sudoku[7, 1]);
+            csp.Nodes.Add(sudoku[8, 1]);
+            csp.Nodes.Add(sudoku[0, 2]);
+            csp.Nodes.Add(sudoku[1, 2]);
+            csp.Nodes.Add(sudoku[2, 2]);
+            csp.Nodes.Add(sudoku[3, 2]);
+            csp.Nodes.Add(sudoku[4, 2]);
+            csp.Nodes.Add(sudoku[5, 2]);
+            csp.Nodes.Add(sudoku[6, 2]);
+            csp.Nodes.Add(sudoku[7, 2]);
+            csp.Nodes.Add(sudoku[8, 2]);
+            csp.Nodes.Add(sudoku[0, 3]);
+            csp.Nodes.Add(sudoku[1, 3]);
+            csp.Nodes.Add(sudoku[2, 3]);
+            csp.Nodes.Add(sudoku[3, 3]);
+            csp.Nodes.Add(sudoku[4, 3]);
+            csp.Nodes.Add(sudoku[5, 3]);
+            csp.Nodes.Add(sudoku[6, 3]);
+            csp.Nodes.Add(sudoku[7, 3]);
+            csp.Nodes.Add(sudoku[8, 3]);
+            csp.Nodes.Add(sudoku[0, 4]);
+            csp.Nodes.Add(sudoku[1, 4]);
+            csp.Nodes.Add(sudoku[2, 4]);
+            csp.Nodes.Add(sudoku[3, 4]);
+            csp.Nodes.Add(sudoku[4, 4]);
+            csp.Nodes.Add(sudoku[5, 4]);
+            csp.Nodes.Add(sudoku[6, 4]);
+            csp.Nodes.Add(sudoku[7, 4]);
+            csp.Nodes.Add(sudoku[8, 4]);
+            csp.Nodes.Add(sudoku[0, 5]);
+            csp.Nodes.Add(sudoku[1, 5]);
+            csp.Nodes.Add(sudoku[2, 5]);
+            csp.Nodes.Add(sudoku[3, 5]);
+            csp.Nodes.Add(sudoku[4, 5]);
+            csp.Nodes.Add(sudoku[5, 5]);
+            csp.Nodes.Add(sudoku[6, 5]);
+            csp.Nodes.Add(sudoku[7, 5]);
+            csp.Nodes.Add(sudoku[8, 5]);
+            csp.Nodes.Add(sudoku[0, 6]);
+            csp.Nodes.Add(sudoku[1, 6]);
+            csp.Nodes.Add(sudoku[2, 6]);
+            csp.Nodes.Add(sudoku[3, 6]);
+            csp.Nodes.Add(sudoku[4, 6]);
+            csp.Nodes.Add(sudoku[5, 6]);
+            csp.Nodes.Add(sudoku[6, 6]);
+            csp.Nodes.Add(sudoku[7, 6]);
+            csp.Nodes.Add(sudoku[8, 6]);
+            csp.Nodes.Add(sudoku[0, 7]);
+            csp.Nodes.Add(sudoku[1, 7]);
+            csp.Nodes.Add(sudoku[2, 7]);
+            csp.Nodes.Add(sudoku[3, 7]);
+            csp.Nodes.Add(sudoku[4, 7]);
+            csp.Nodes.Add(sudoku[5, 7]);
+            csp.Nodes.Add(sudoku[6, 7]);
+            csp.Nodes.Add(sudoku[7, 7]);
+            csp.Nodes.Add(sudoku[8, 7]);
+            csp.Nodes.Add(sudoku[0, 8]);
+            csp.Nodes.Add(sudoku[1, 8]);
+            csp.Nodes.Add(sudoku[2, 8]);
+            csp.Nodes.Add(sudoku[3, 8]);
+            csp.Nodes.Add(sudoku[4, 8]);
+            csp.Nodes.Add(sudoku[5, 8]);
+            csp.Nodes.Add(sudoku[6, 8]);
+            csp.Nodes.Add(sudoku[7, 8]);
+            csp.Nodes.Add(sudoku[8, 8]);
+            csp.Nodes.Add(sudoku[1, 0]);
+            csp.Nodes.Add(sudoku[2, 0]);
+            csp.GenerateArcs();
+
+             // Act
+             var isResolved = csp.BacktrackingSearch();
+
+            // Assert
+            Assert.IsFalse(isResolved);
+        }
+
+        /*
+        [TestMethod]
+        public void T_RecursiveBacktracking_20x20()
+        {
+            // Arrange
+            string fileContent = System.IO.File.ReadAllText("..\\..\\..\\..\\Sudokus\\20x20\\true_sudoku.ss");
+            Form1 form = new Form1();
+            PrivateObject obj = new PrivateObject(form);
+            var loaded = obj.Invoke("DecodeGrid_Regular", fileContent);
+            CSP csp = (CSP)obj.GetProperty("Csp");
+
+            // Act
+            var isResolved = csp.BacktrackingSearch();
+
+            // Assert
+            Assert.IsInstanceOfType(loaded, typeof(bool), "Wrong type returned by Form1.DecodeGrid_Regular().");
+            Assert.IsTrue((bool)loaded, "Grid cannot be loaded from file.");
+
+            Assert.IsTrue(isResolved, "Sudoku cannot be solved");
+        }
+
+        [TestMethod]
+        public void T_RecursiveBacktracking_25x25()
+        {
+            // Arrange
+            string fileContent = System.IO.File.ReadAllText("..\\..\\..\\..\\Sudokus\\25x25\\25x25_n3181.ss");
+            Form1 form = new Form1();
+            PrivateObject obj = new PrivateObject(form);
+            var loaded = obj.Invoke("DecodeGrid_Regular", fileContent);
+            CSP csp = (CSP)obj.GetProperty("Csp");
+
+            string fileContentExpected = System.IO.File.ReadAllText("..\\..\\..\\..\\Sudokus\\25x25\\25x25_n3181_expected.ss");
+            Form1 formExpected = new Form1();
+            PrivateObject objExpected = new PrivateObject(form);
+            var loadedExpected = obj.Invoke("DecodeGrid_Regular", fileContent);
+            CSP cspExpected = (CSP)obj.GetProperty("Csp");
+
+            // Act
+            var isResolved = csp.BacktrackingSearch();
+
+            // Assert
+            Assert.IsInstanceOfType(loaded, typeof(bool), "Wrong type returned by Form1.DecodeGrid_Regular().");
+            Assert.IsTrue((bool)loaded, "Grid cannot be loaded from file.");
+
+            Assert.IsTrue(isResolved, "Sudoku cannot be solved");
+            CollectionAssert.AreEqual(csp.Nodes, cspExpected.Nodes, "Wrong values");
+        }*/
     }
 }

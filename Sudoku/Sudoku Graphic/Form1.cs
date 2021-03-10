@@ -43,6 +43,7 @@ namespace Sudoku_Graphic
 
         Grid grid = new Grid();
         CSP csp = new CSP();
+        public CSP Csp { get => csp; set => csp = value; }
 
         State state;
 

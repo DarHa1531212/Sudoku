@@ -574,7 +574,9 @@ namespace Sudoku_Graphic
         /*private void GenerateSudoku()
         {
             GenerateCells();
+            GenerateDomains();
             GenerateArcs();
+
             // ModifyNeighbouringCells
             Random rng = new Random();
             int numberOfSolutions = int.MaxValue;
