@@ -95,6 +95,7 @@ namespace Sudoku_Graphic
             posX = cell.PosX;
             posY = cell.PosY;
             value = cell.Value;
+            zoneNumber = cell.ZoneNumber;
             domain = new List<char>(cell.Domain);
         }
 

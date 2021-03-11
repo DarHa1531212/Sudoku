@@ -43,7 +43,7 @@ namespace Sudoku_Graphic
 
         Grid grid = new Grid();
         CSP csp = new CSP();
-        public CSP Csp { get => csp; set => csp = value; }
+        //public CSP Csp { get => csp; set => csp = value; }
 
         State state;
 
@@ -602,10 +602,14 @@ namespace Sudoku_Graphic
 
         private void BtnGenerate_Click(object sender, EventArgs e)
         {
+            LabelWaitingGeneration.Visible = true;
+            LabelWaitingGeneration.Update();
             actualDimensions = new GridDimensions(9, 9, 3, 3);
             csp.Dimensions = actualDimensions;
             csp.ClearLists();
-            csp.GenerateSudoku((10.0f / 100.0f) * (actualDimensions.GridSizeX * actualDimensions.GridSizeY));
+            recreateCells();
+            csp.GenerateSudoku((25.0f / 100.0f) * (actualDimensions.GridSizeX * actualDimensions.GridSizeY));
+            LabelWaitingGeneration.Visible = false;
             UpdateGridDisplay_Regular();
         }
 

@@ -565,7 +565,7 @@ namespace Sudoku_Graphic
                 {
                     Cell cell = new Cell(line, column, dimensions.GridSizeX);
                     cell.Value = '.';
-                    cell.ZoneNumber = dimensions.NumberOfSquaresOnLine() * (line / dimensions.SquareSizeX) + column / dimensions.SquareSizeY;
+                    cell.ZoneNumber = dimensions.NumberOfSquaresOnLine() * (line / dimensions.SquareSizeX) + (column / dimensions.SquareSizeY);
                     GraphNode node = new GraphNode(cell);
                     Nodes.Add(node);
                 }
@@ -575,9 +575,7 @@ namespace Sudoku_Graphic
         public void GenerateSudoku(float level)
         {
             GenerateCells();
-            Console.WriteLine(Nodes.Count);
             GenerateArcs();
-            Console.WriteLine(graphArcs.Count);
 
             Random rng = new Random();
             List<GraphNode> currentState = new List<GraphNode>(Nodes);
@@ -585,7 +583,7 @@ namespace Sudoku_Graphic
             Stack<GraphNode> states = new Stack<GraphNode>();
             List<List<GraphNode>> forbiddenStates = new List<List<GraphNode>>();
 
-            while (numberOfSolutions != 1 || states.Count < level)
+            while (/*numberOfSolutions != 1 ||*/ states.Count < level)
             {
                 int posX = rng.Next(0, Dimensions.GridSizeX);
                 int posY = rng.Next(0, Dimensions.GridSizeY);
@@ -605,21 +603,20 @@ namespace Sudoku_Graphic
                 states.Push(node);
 
                 numberOfSolutions = CountSolutions();
-                Console.WriteLine(numberOfSolutions + " | (" + cell.PosX + ", " + cell.PosY + ") = " + cell.Value);
-                Console.WriteLine(states.Count);
                 if (numberOfSolutions < 1)
                 {
                     forbiddenStates.Add(currentState);
-                    Console.WriteLine(forbiddenStates.Count);
                     int stepsToBacktrack = forbiddenStates.FindAll(state => state.All(currentState.Contains)).Count;
-                    Console.WriteLine("stepsToBacktrack → " + stepsToBacktrack);
 
                     //RestoreOldDomains(oldDomains);
                     //cell.Value = '.';
 
                     for (uint i = 0; i < stepsToBacktrack; i++)
                     {
-                        states.Pop().Cell.Value = '.';
+                        GraphNode deleted = states.Pop();
+                        deleted.Cell.Value = '.';
+                        //Nodes[deleted.Cell.PosX + deleted.Cell.PosY * Dimensions.GridSizeX].Cell.Value = '.';
+                        Nodes.Find(n => n.Cell.PosX == deleted.Cell.PosX && n.Cell.PosY == deleted.Cell.PosY).Cell.Value = '.';
                     }
                 }
             }
