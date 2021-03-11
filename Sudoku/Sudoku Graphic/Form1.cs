@@ -602,15 +602,29 @@ namespace Sudoku_Graphic
 
         private void BtnGenerate_Click(object sender, EventArgs e)
         {
+            if(!asCSP)
+            {
+                MessageBox.Show("La génération de sudoku n'est disponible qu'avec une résolution par CSP.");
+                return;
+            }
             LabelWaitingGeneration.Visible = true;
             LabelWaitingGeneration.Update();
             actualDimensions = new GridDimensions(9, 9, 3, 3);
             csp.Dimensions = actualDimensions;
             csp.ClearLists();
             recreateCells();
-            csp.GenerateSudoku((25.0f / 100.0f) * (actualDimensions.GridSizeX * actualDimensions.GridSizeY));
+            csp.GenerateSudoku(this.SliderCellsGenerated.Value);
             LabelWaitingGeneration.Visible = false;
-            UpdateGridDisplay_Regular();
+            if(irregularSudoku)
+            {
+                UpdateGridDisplay_Irregular();
+
+            } else
+            {
+                UpdateGridDisplay_Regular();
+
+            }
+            state = State.SUDOKU_LOADED;
         }
 
         private void Debug_Click(object sender, EventArgs e)
@@ -670,6 +684,16 @@ namespace Sudoku_Graphic
             {
                 MessageBox.Show("Type de sudoku : régulier");
             }
+        }
+
+        private void Form1_Load(object sender, EventArgs e)
+        {
+
+        }
+        
+        private void Value_Changed(object sender, EventArgs e)
+        {
+            this.NumberOfCells.Text = this.SliderCellsGenerated.Value.ToString();
         }
     }
 }
