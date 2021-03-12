@@ -47,7 +47,13 @@ namespace Sudoku_Graphic
         /// </summary>
         public List<char> Domain { get => domain; set => domain = value; }
 
+        /// <summary>
+        /// Idicates in which zone (equivalent of the 3*3 squares on a normal 9*9 sudoku) the cell is.
+        /// </summary>
         private int zoneNumber;
+        /// <summary>
+        /// Gets and sets <see cref="Cell.zoneNumber"/>.
+        /// </summary>
         public int ZoneNumber { get => zoneNumber; set => zoneNumber = value; }
 
         #endregion
@@ -79,12 +85,20 @@ namespace Sudoku_Graphic
             }
         }
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="Cell"/> class with a given position
+        /// and domain.
+        /// </summary>
+        /// <param name="x">The x position of the cell in the grid.</param>
+        /// <param name="y">The y position of the cell in the grid.</param>
+        /// <param name="_domain">The domain of the cell.</param>
         public Cell(int x, int y, List<char> _domain)
         {
             posX = x;
             posY = y;
             domain = new List<char>(_domain);
         }
+
         /// <summary>
         /// Initializes a new instance of the <see cref="Cell"/> class by copying
         /// another <see cref="Cell"/> instance.
@@ -103,6 +117,10 @@ namespace Sudoku_Graphic
 
         #region Public Methods
 
+        /// <summary>
+        /// Removes a value from the <see cref="Cell.domain"/>.
+        /// </summary>
+        /// <param name="value">The value to remove.</param>
         public void RemoveFromDomain(char value)
         {
             domain.Remove(value);

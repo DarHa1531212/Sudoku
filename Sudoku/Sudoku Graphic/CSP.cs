@@ -9,19 +9,42 @@ namespace Sudoku_Graphic
     public class CSP
     {
         #region Constants
-
+        /// <summary>
+        /// Default sudoku grid size
+        /// </summary>
         const ushort _defaultSize = 9;
+        /// <summary>
+        /// Default sudoku zones size
+        /// </summary>
         const ushort _defaultSquareSize = 3;
 
         #endregion
 
         #region Attributes
-
+        /// <summary>
+        /// The dimensions of the sudoku represented by this CSP.
+        /// </summary>
         private GridDimensions dimensions;
+        /// <summary>
+        /// The different <see cref="GraphNode"/> in this CSP's graph.
+        /// </summary>
         private List<GraphNode> nodes;
+        /// <summary>
+        /// The different <see cref="GraphArcs"/> in this CSP's graph.
+        /// </summary>
         private List<GraphArc> graphArcs;
+
+        /// <summary>
+        /// Gets and sets <see cref="dimensions"/>.
+        /// </summary>
         public GridDimensions Dimensions { get => dimensions; set => dimensions = value; }
+        /// <summary>
+        /// Gets and sets <see cref="nodes"/>.
+        /// </summary>
         public List<GraphNode> Nodes { get => nodes; set => nodes = value; }
+        /// <summary>
+        /// Gets and sets <see cref="graphArcs"/>.
+        /// </summary>
         public List<GraphArc> GraphArcs { get => graphArcs; set => graphArcs = value; }
 
         #endregion
@@ -43,8 +66,8 @@ namespace Sudoku_Graphic
 
         #region Public Methods
         /// <summary>
-        /// Generates the constraints (populates each <see cref="GraphNode"/> of <see cref="CSP.nodes"/>) between the 
-        /// different <see cref="GraphNode"/> in <see cref="CSP.nodes"/> using classic sudoku's rules.
+        /// Generates the constraints (populates each <see cref="GraphNode"/> of <see cref="nodes"/>) between the 
+        /// different <see cref="GraphNode"/> in <see cref="nodes"/> using classic sudoku's rules.
         /// Note than each constraint will appear "twice" : one from every node to the other
         /// </summary>
         public void GenerateArcs()
@@ -52,8 +75,6 @@ namespace Sudoku_Graphic
             foreach (GraphNode node1 in nodes)
             {
                 Cell cell1 = node1.Cell;
-                //int squareX1 = cell1.PosX / dimensions.SquareSizeX;
-                //int squareY1 = cell1.PosY / dimensions.SquareSizeY;
                 foreach (GraphNode node2 in nodes)
                 {
                     Cell cell2 = node2.Cell;
@@ -61,8 +82,6 @@ namespace Sudoku_Graphic
                     {
                         continue;
                     }
-                    //int squareX2 = cell2.PosX / dimensions.SquareSizeX;
-                    //int squareY2 = cell2.PosY / dimensions.SquareSizeY;
                     if (cell1.PosX == cell2.PosX || cell1.PosY == cell2.PosY ||
                         (cell1.ZoneNumber == cell2.ZoneNumber))
                     {
@@ -92,7 +111,7 @@ namespace Sudoku_Graphic
         }
 
         /// <summary>
-        /// Clears <see cref="CSP.nodes"/>.
+        /// Clears <see cref="nodes"/> and <see cref="graphArcs"/>.
         /// </summary>
         public void ClearLists()
         {
@@ -107,6 +126,8 @@ namespace Sudoku_Graphic
         /// The recursive part of the backtracking-search algorithm. Iterates over the possible <see cref="Cell.value"/> of every
         /// <see cref="Cell"/> whose <see cref="Cell.value"/> is equal to '.' until either a solution is found or every possible state
         /// has been tested.
+        /// 
+        /// It modifies the CSP at runtime.
         /// </summary>
         /// <returns>
         ///  <c>true</c> if a solution has been found;
@@ -129,24 +150,16 @@ namespace Sudoku_Graphic
             {
                 Dictionary <Cell, List<char>> oldDomains = StoreOldDomains();
 
-                //List<char> oldDomain = new List<char>(chosenNode.Cell.Domain);
                 chosenNode.Cell.Value = value;
-                chosenNode.Cell.Domain = new List<char>(new char[] { value });
-                List<Cell> modifiedCells = ModifyNeighbouringCells(chosenNode);
+                chosenNode.Cell.Domain = new List<char>{ value };
+                ModifyNeighbouringCells(chosenNode);
                 AC3();
-                //if (IsConsistant(chosenNode))
-                //{
-                    bool success = RecursiveBacktracking();
-                    if (success)
-                    {
-                        return true;
-                    }
-                //}
+                bool success = RecursiveBacktracking();
+                if (success)
+                {
+                    return true;
+                }
                 RestoreOldDomains(oldDomains);
-                //foreach(Cell cell in modifiedCells)
-                //{
-                //    cell.Domain.Add(value);
-                //}
                 chosenNode.Cell.RemoveFromDomain(value);
                 chosenNode.Cell.Value = '.';
             }
@@ -154,6 +167,10 @@ namespace Sudoku_Graphic
             return false;
         }
 
+        /// <summary>
+        /// Checks if all <see cref="Cell"/> have at least one remaining possible <see cref="Cell.value"/> in their <see cref="Cell.domain"/>.
+        /// </summary>
+        /// <returns></returns>
         private bool ForwardChecking()
         {
             foreach (GraphNode node in nodes)
@@ -166,6 +183,10 @@ namespace Sudoku_Graphic
             return false;
         }
 
+        /// <summary>
+        /// Arc-Consistency Algorithm. Removes the <see cref="Cell.value"/> in <see cref="Cell.domain"/>
+        /// that will for sure not be in a solution given our current CSP.
+        /// </summary>
         private void AC3()
         {
             Queue<GraphArc> arcs = new Queue<GraphArc>(graphArcs);
@@ -353,7 +374,7 @@ namespace Sudoku_Graphic
         /// constraints. The constraints are represented in <see cref="GraphNode.connectedArcs"/>.
         /// </summary>
         /// <returns>
-        /// The <see cref="GraphNode"/> that satisfies this condition.
+        /// The list of <see cref="GraphNode"/> that satisfies this condition.
         /// </returns>
         private List<GraphNode> DegreeHeuristic()
         {
@@ -378,7 +399,14 @@ namespace Sudoku_Graphic
             }
             return returnedNodes;
         }
-
+        /// <summary>
+        /// Calls DegreeHeuristic on a list of <see cref="GraphNode"/> and returns the node who "scored" the best.
+        /// </summary>
+        /// <param name="input">The <see cref="GraphNode"/> competitors.</param>
+        /// <returns>
+        /// The <see cref="GraphNode"/> with the maximum number of constraints. 
+        /// In a case of equality, the first one to obtain the maximum value is chosen.
+        /// </returns>
         private GraphNode DegreeHeuristicOnSomeNodes(List<GraphNode> input)
         {
             GraphNode output = null;
@@ -398,6 +426,7 @@ namespace Sudoku_Graphic
         /// <summary>
         /// Given a <see cref="GraphNode"/>, returns a list of every possible <see cref="Cell.value"/> in its 
         /// <see cref="Cell"/>'s <see cref="Cell.domain"/> that wouldn't make the assignment inconsistent.
+        /// Since the domain is updated every iteration, this function simply returns the cell's domain.
         /// </summary>
         /// <param name="node">The <see cref="GraphNode"/> we want to give a value to.</param>
         /// <returns>
@@ -405,15 +434,6 @@ namespace Sudoku_Graphic
         /// </returns>
         private List<char> GetRemainingPossibleValues(GraphNode node)
         {
-            //List<char> remainingValues = new List<char>(node.Cell.Domain);
-
-            //foreach (GraphArc arc in node.ConnectedArcs)
-            //{
-            //    remainingValues.Remove(arc.GetOtherCellValue(node.Cell));
-            //}
-
-            //return remainingValues;
-
             return node.Cell.Domain;
         }
 
@@ -506,6 +526,11 @@ namespace Sudoku_Graphic
             return orderedValues;
         }
 
+        /// <summary>
+        /// Initializes the domain of every <see cref="GraphNode.cell"/> in <see cref="nodes"/> with these rules :
+        /// - If the value of the cell isn't '.', its domain becomes qual to the value alone;
+        /// - If the value of the cell is a '.', its somain becomes every non inconsistant values.
+        /// </summary>
         private void GenerateDomains()
         {
             foreach (GraphNode node in nodes)
@@ -524,6 +549,14 @@ namespace Sudoku_Graphic
             }
         }
 
+        /// <summary>
+        /// Given a node whose cell's value just got updated, modify the domain of it connected cells by
+        /// removing this value and returns the list of modified cells.
+        /// </summary>
+        /// <param name="node">The modified <see cref="GraphNode"/>.</param>
+        /// <returns>
+        /// The list of <see cref="Cell"/> with a domain modified by this <paramref name="node"/>.
+        /// </returns>
         private List<Cell> ModifyNeighbouringCells(GraphNode node)
         {
             List<Cell> cellsWithChangedDomains = new List<Cell>();
@@ -538,7 +571,12 @@ namespace Sudoku_Graphic
             return cellsWithChangedDomains;
         }
 
-
+        /// <summary>
+        /// Stores the domain of every cell.
+        /// </summary>
+        /// <returns>
+        /// A dictionnary where the key is the cell and the value is its domain.
+        /// </returns>
         private Dictionary<Cell, List<char>> StoreOldDomains()
         {
             Dictionary<Cell, List<char>> oldDomains = new Dictionary<Cell, List<char>>();
@@ -549,6 +587,11 @@ namespace Sudoku_Graphic
             return oldDomains;
         }
 
+        /// <summary>
+        /// Given a dictionnary of {key: <see cref="Cell"/>, value: <see cref="Cell.domain"/>,
+        /// affects the value to the key's <see cref="Cell.domain"/>.
+        /// </summary>
+        /// <param name="oldDomains">The domains to affect and teir cell.</param>
         private void RestoreOldDomains(Dictionary<Cell, List<char>> oldDomains)
         {
             foreach(Cell cell in oldDomains.Keys)
@@ -557,6 +600,9 @@ namespace Sudoku_Graphic
             }
         }
 
+        /// <summary>
+        /// Creates a 9*9 empty sudoku grid.
+        /// </summary>
         private void GenerateCells()
         {
             for (var line = 0; line < Dimensions.GridSizeX; line++)
@@ -572,6 +618,11 @@ namespace Sudoku_Graphic
             }
         }
 
+        /// <summary>
+        /// Generates a 9*9 sudoku grid with <paramref name="level"/>cells already filled.
+        /// This sudoku will have 0 or more solutions.
+        /// </summary>
+        /// <param name="level">The number of cells already filled.</param>
         public void GenerateSudoku(float level)
         {
             GenerateCells();
@@ -622,6 +673,12 @@ namespace Sudoku_Graphic
             }
         }
 
+        /// <summary>
+        /// Counts how many solutions a sudoku has.
+        /// </summary>
+        /// <returns>
+        /// As of now, returns <c>1</c> if the sudoku has at least a solution and <c>0</c> if it doesn't.
+        /// </returns>
         private int CountSolutions()
         {
             List<GraphNode> NodesCopy = Nodes.ConvertAll(node => new GraphNode(new Cell(node.Cell)));
