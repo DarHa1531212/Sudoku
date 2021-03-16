@@ -173,10 +173,6 @@ namespace Sudoku_Graphic
             int hash = posX.GetHashCode() ^ 5 +
                 8 * posY.GetHashCode() ^ 17 +
                 6*zoneNumber.GetHashCode()^5;
-            //foreach (char c in domain)
-            //{
-            //    hash += c.GetHashCode() ^ 9;
-            //}
             return hash;
         }
 

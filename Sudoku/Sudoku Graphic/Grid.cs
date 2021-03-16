@@ -43,7 +43,6 @@ namespace Sudoku_Graphic
 
         public Cell[,] BacktrackingSearch()
         {
-            //char[,] cellsAsChar = CellsAsChar();
             if(IsFullyConsistent(sudokuGrid))
             {
                 return RecursiveBacktracking(sudokuGrid);
@@ -107,7 +106,6 @@ namespace Sudoku_Graphic
 
         private Tuple<int, int> SelectUnassignedVariable(Cell[,] grid)
         {
-            // TODO: modifier la façon dont est selectionnée la case
             for (int i = 0; i < _gridSize; i++)
             {
                 for (int j = 0; j < _gridSize; j++)
@@ -238,15 +236,6 @@ namespace Sudoku_Graphic
 
         private List<char> OrderDomainValues(Tuple<int, int> position, Cell[,] grid)
         {
-            // TODO: modifier pour les ordonner
-            /*
-            List<char> values = new List<char>();
-            for (char v = '1'; v == '9'; v++)
-            {
-                values.Add(v);
-            }
-            return values;
-            */
             return grid[position.Item1, position.Item2].Domain;
         }
 
@@ -298,7 +287,6 @@ namespace Sudoku_Graphic
 
         private bool IsConsistent(Tuple<int, int> position, char value, Cell[,] grid)
         {
-            // TODO: ajouter la vérification des contraintes
             for (int index = 0; index < _gridSize; ++index)
             {
                 if (index != position.Item1)

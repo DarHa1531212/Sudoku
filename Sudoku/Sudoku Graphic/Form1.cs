@@ -43,7 +43,6 @@ namespace Sudoku_Graphic
 
         Grid grid = new Grid();
         CSP csp = new CSP();
-        //public CSP Csp { get => csp; set => csp = value; }
 
         State state;
 
@@ -97,7 +96,6 @@ namespace Sudoku_Graphic
                 {
                     cells[i, j] = new Label();
                     cells[i, j].Font = new Font(SystemFonts.DefaultFont.FontFamily, 180 / size);
-                    //cells[i, j].Font = new Font(SystemFonts.DefaultFont.FontFamily, 180 / size);
                     cells[i, j].Size = new Size(360 / size, 360 / size);
                     cells[i, j].BorderStyle = BorderStyle.Fixed3D;
                     cells[i, j].TextAlign = ContentAlignment.MiddleCenter;
@@ -325,18 +323,6 @@ namespace Sudoku_Graphic
                 foreach (GraphNode node in csp.Nodes)
                 {
                     Cell cell = node.Cell;
-                    //string value;
-                    //if (cell.Value >= 'A')
-                    //{
-                    //    int realInteger = 10 + cell.Value - 'A';
-                    //    Console.WriteLine(realInteger);
-                    //    value = realInteger.ToString();
-                    //    Console.WriteLine(value);
-                    //}
-                    //else
-                    //{
-                    //    value = cell.Value.ToString();
-                    //}
                     cells[cell.PosY, cell.PosX].Text = cell.Value.ToString();
                     int squareY = cell.PosY / csp.Dimensions.SquareSizeY;
                     int squareX = cell.PosX / csp.Dimensions.SquareSizeX;
@@ -431,11 +417,6 @@ namespace Sudoku_Graphic
 
             int sizeY = numberOfSquaresY * squareSizeY;
             int sizeX = numberOfSquaresX * squareSizeX;
-
-            Console.WriteLine("Size X : " + sizeX.ToString());
-            Console.WriteLine("Size Y : " + sizeY.ToString());
-            Console.WriteLine("Square Size X : " + squareSizeX.ToString());
-            Console.WriteLine("Square Size Y : " + squareSizeY.ToString());
 
             GridDimensions dimensions = new GridDimensions(sizeX, sizeY, squareSizeX, squareSizeY);
 
@@ -627,33 +608,6 @@ namespace Sudoku_Graphic
             state = State.SUDOKU_LOADED;
         }
 
-        private void Debug_Click(object sender, EventArgs e)
-        {
-            // Arrange
-            CSP csp2 = new CSP();
-            GraphNode gn0 = new GraphNode(new Cell(0, 0));
-            GraphNode gn1 = new GraphNode(new Cell(0, 2));
-            GraphNode gn2 = new GraphNode(new Cell(0, 6));
-            csp2.Nodes.Add(gn0);
-            csp2.Nodes.Add(gn1);
-            csp2.Nodes.Add(gn2);
-
-            GraphArc ga01 = new GraphArc(gn0, gn1);
-            GraphArc ga02 = new GraphArc(gn0, gn2);
-            GraphArc ga10 = new GraphArc(gn1, gn0);
-            GraphArc ga12 = new GraphArc(gn1, gn2);
-            GraphArc ga20 = new GraphArc(gn2, gn0);
-            GraphArc ga21 = new GraphArc(gn2, gn1);
-
-            // Act
-            csp2.GenerateArcs();
-        }
-
-        private void Sudoku_Paint(object sender, PaintEventArgs e)
-        {
-
-        }
-
         private void BtnChngStruct_Click(object sender, EventArgs e)
         {
             asCSP = !asCSP;
@@ -684,11 +638,6 @@ namespace Sudoku_Graphic
             {
                 MessageBox.Show("Type de sudoku : régulier");
             }
-        }
-
-        private void Form1_Load(object sender, EventArgs e)
-        {
-
         }
         
         private void Value_Changed(object sender, EventArgs e)
