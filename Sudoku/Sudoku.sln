@@ -1,13 +1,9 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 15
-VisualStudioVersion = 15.0.28307.1340
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.31025.194
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Sudoku", "Sudoku\Sudoku.csproj", "{4576EF1B-2481-4BF3-970F-210DBCD62351}"
-EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Sudoku Graphic", "Sudoku Graphic\Sudoku Graphic.csproj", "{E4777397-96C1-4A71-A81F-5029EF63872F}"
-EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CSPTest", "CSPTest\CSPTest.csproj", "{C2B913BA-38CA-4AFC-8B00-41EF780A3EF9}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Tests", "Tests\Tests.csproj", "{D658F5D5-75D2-4F66-9007-E81C9C783951}"
 EndProject
@@ -17,18 +13,10 @@ Global
 		Release|Any CPU = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{4576EF1B-2481-4BF3-970F-210DBCD62351}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{4576EF1B-2481-4BF3-970F-210DBCD62351}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{4576EF1B-2481-4BF3-970F-210DBCD62351}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{4576EF1B-2481-4BF3-970F-210DBCD62351}.Release|Any CPU.Build.0 = Release|Any CPU
 		{E4777397-96C1-4A71-A81F-5029EF63872F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{E4777397-96C1-4A71-A81F-5029EF63872F}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{E4777397-96C1-4A71-A81F-5029EF63872F}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{E4777397-96C1-4A71-A81F-5029EF63872F}.Release|Any CPU.Build.0 = Release|Any CPU
-		{C2B913BA-38CA-4AFC-8B00-41EF780A3EF9}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{C2B913BA-38CA-4AFC-8B00-41EF780A3EF9}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{C2B913BA-38CA-4AFC-8B00-41EF780A3EF9}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{C2B913BA-38CA-4AFC-8B00-41EF780A3EF9}.Release|Any CPU.Build.0 = Release|Any CPU
 		{D658F5D5-75D2-4F66-9007-E81C9C783951}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{D658F5D5-75D2-4F66-9007-E81C9C783951}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{D658F5D5-75D2-4F66-9007-E81C9C783951}.Release|Any CPU.ActiveCfg = Release|Any CPU
